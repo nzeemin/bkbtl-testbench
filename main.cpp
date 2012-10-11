@@ -19,8 +19,49 @@ void Test_Basic10()
     Test_Init(_T("TEST 1: BASIC BK0010"), BK_CONF_BK0010_BASIC);
 
     Emulator_Run(50);
+    Test_CheckScreenshot(_T("data\\test01_01.bmp"));
 
-    Test_SaveScreenshot(_T("test01_01.bmp"));
+    Emulator_KeyboardSequence("PRINT PI\n");
+
+    Emulator_KeyboardSequence("10 FOR I=32 TO 127\n");
+    Emulator_KeyboardSequence("20 PRINT CHR$(I);\n");
+    Emulator_KeyboardSequence("30 IF I MOD 16 = 15 THEN PRINT\n");
+    Emulator_KeyboardSequence("50 NEXT I\n");
+    Emulator_KeyboardSequence("RUN\n");
+    Emulator_Run(25);  // Wait 1 second
+    Test_CheckScreenshot(_T("data\\test01_02.bmp"));
+
+    //Emulator_KeyboardSequence("1 ;1234567890-/\n");
+    //Emulator_KeyboardSequence("2 +!\"#$%&'(){=?\n");
+    //Emulator_KeyboardSequence("3 JCUKENG[]ZH*}\n");
+
+    // BASIC speed test by Sergey Frolov, see http://www.leningrad.su/calc/speed.php
+    Emulator_Reset();
+    Emulator_Run(50);
+    Emulator_KeyboardSequence("4 FOR I = 1 TO 10\n");
+    Emulator_KeyboardSequence("5 A = 1.0000001\n");
+    Emulator_KeyboardSequence("10 B = A\n");
+    Emulator_KeyboardSequence("15 FOR J = 1 TO 27\n");
+    Emulator_KeyboardSequence("20 A = A * A\n");
+    Emulator_KeyboardSequence("25 B = B ^ 2.01\n");
+    Emulator_KeyboardSequence("30 NEXT J\n");
+    Emulator_KeyboardSequence("35 NEXT I\n");
+    Emulator_KeyboardSequence("40 PRINT A, B\n");
+    Emulator_KeyboardSequence("RUN\n");
+    Emulator_Run(1084);
+    //Test_SaveScreenshotSeria(_T("video\\test01_%04u.bmp"), 12, 1);
+    Test_CheckScreenshot(_T("data\\test01_04.bmp"));
+
+    Test_Done();
+}
+
+void Test_Focal10()
+{
+    Test_Init(_T("TEST 1: Focal BK0010"), BK_CONF_BK0010_FOCAL);
+
+    Emulator_Run(50);
+
+    Test_CheckScreenshot(_T("data\\test02_01.bmp"));
 
     Test_Done();
 }
@@ -31,6 +72,7 @@ int _tmain(int argc, _TCHAR* argv[])
     Test_LogInfo(_T("Initialization..."));
 
     Test_Basic10();
+    Test_Focal10();
 
     Test_LogInfo(_T("Finalization..."));
     SYSTEMTIME timeTo;  ::GetLocalTime(&timeTo);
