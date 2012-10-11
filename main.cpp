@@ -61,11 +61,27 @@ void Test_Basic10()
 
 void Test_Focal10()
 {
-    Test_Init(_T("TEST 1: Focal BK0010"), BK_CONF_BK0010_FOCAL);
+    Test_Init(_T("TEST 2: Focal BK0010"), BK_CONF_BK0010_FOCAL);
 
     Emulator_Run(50);
+    Emulator_KeyboardSequence("V\n");
 
     Test_CheckScreenshot(_T("data\\test02_01.bmp"));
+
+    //// BASIC speed test by Sergey Frolov, see http://www.leningrad.su/calc/speed.php
+    //Emulator_KeyboardSequence("01.04 F I=1,10; DO 2\n");
+    //Emulator_KeyboardSequence("01.40 T A,B,!\n");
+    //Emulator_KeyboardSequence("01.50 Q\n");
+    //Emulator_KeyboardSequence("02.05 S A=1.0000001\n");
+    //Emulator_KeyboardSequence("02.10 S B=A\n");
+    //Emulator_KeyboardSequence("02.15 F J=1,27; DO 3\n");
+    //Emulator_KeyboardSequence("03.20 S A=A*A\n");
+    //Emulator_KeyboardSequence("03.25 S B=B^2.01\n");
+    ////Emulator_KeyboardSequence("03.40 T J,A,B,!\n");
+    //Emulator_KeyboardSequence("GO\n");
+    //Emulator_Run(200);
+    //Test_SaveScreenshot(_T("test02_02.bmp"));
+    ////NOTE: Программа вылетает с ошибкой переполнения при J=26 -- видимо, не хватает точности
 
     Test_Done();
 }
