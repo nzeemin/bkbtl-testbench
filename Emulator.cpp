@@ -32,10 +32,13 @@ BOOL g_okEmulatorRunning = FALSE;
 
 WORD m_wEmulatorCPUBreakpoint = 0177777;
 
-
 DWORD m_dwTickCount = 0;
 DWORD m_dwEmulatorUptime = 0;  // BK uptime, seconds, from turn on or reset, increments every 25 frames
 long m_nUptimeFrameCount = 0;
+
+char * m_pEmulatorTeletypeBuffer = NULL;
+int m_nEmulatorTeletypeBufferSize = 0;
+int m_nEmulatorTeletypeBufferIndex = 0;
 
 
 //////////////////////////////////////////////////////////////////////
@@ -634,6 +637,103 @@ void Emulator_KeyboardSequence(const char * str)
     {
         Emulator_KeyboardPressReleaseChar(*p);
         p++;
+    }
+}
+
+BOOL Emulator_LoadBin(LPCTSTR strFileName)
+{
+    // Open file for reading
+    HANDLE hFile = CreateFile(strFileName,
+            GENERIC_READ, FILE_SHARE_READ, NULL,
+            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        //AlertWarning(_T("Failed to load binary file."));
+        return FALSE;
+    }
+
+    // Load BIN header
+    BYTE bufHeader[20];
+	DWORD bytesRead;
+	::ReadFile(hFile, bufHeader, 4, &bytesRead, NULL);
+    if (bytesRead != 4)
+    {
+        ::CloseHandle(hFile);
+        //AlertWarning(_T("Failed to load binary file."));
+        return FALSE;
+    }
+
+    WORD baseAddress = *((WORD*)bufHeader);
+    WORD dataSize = *(((WORD*)bufHeader) + 1);
+
+    // Get file size
+    DWORD bytesToRead = dataSize;
+    WORD memoryBytes = (dataSize + 1) & 0xfffe;
+
+    // Allocate memory
+    BYTE* pBuffer = (BYTE*)::LocalAlloc(LPTR, memoryBytes);
+
+    // Load file data
+	::ReadFile(hFile, pBuffer, dataSize, &bytesRead, NULL);
+    if (bytesRead != bytesToRead)
+    {
+        ::LocalFree(pBuffer);
+        ::CloseHandle(hFile);
+        //AlertWarning(_T("Failed to load binary file."));
+        return FALSE;
+    }
+
+    // Copy data to BK memory
+    WORD address = baseAddress;
+    WORD* pData = (WORD*)pBuffer;
+    while (address < baseAddress + memoryBytes)
+    {
+        WORD value = *pData++;
+        g_pBoard->SetRAMWord(address, value);
+        address += 2;
+    }
+
+    ::LocalFree(pBuffer);
+    ::CloseHandle(hFile);
+
+    return TRUE;
+}
+
+void CALLBACK Emulator_TeletypeCallback(BYTE symbol)
+{
+    if (m_pEmulatorTeletypeBuffer == NULL)
+        return;
+    if (m_nEmulatorTeletypeBufferIndex >= m_nEmulatorTeletypeBufferSize)
+        return;
+
+    m_pEmulatorTeletypeBuffer[m_nEmulatorTeletypeBufferIndex] = symbol;
+    m_nEmulatorTeletypeBufferIndex++;
+    m_pEmulatorTeletypeBuffer[m_nEmulatorTeletypeBufferIndex] = 0;
+}
+
+const char * Emulator_GetTeletypeBuffer()
+{
+    return m_pEmulatorTeletypeBuffer;
+}
+void Emulator_AttachTeletypeBuffer(int bufferSize)
+{
+    ASSERT(bufferSize > 0);
+
+    m_pEmulatorTeletypeBuffer = (char *) ::malloc(bufferSize + 1);
+    m_nEmulatorTeletypeBufferIndex = 0;
+    m_nEmulatorTeletypeBufferSize = bufferSize;
+    m_pEmulatorTeletypeBuffer[0] = 0;
+
+    g_pBoard->SetTeletypeCallback(Emulator_TeletypeCallback);
+}
+void Emulator_DetachTeletypeBuffer()
+{
+    g_pBoard->SetTeletypeCallback(NULL);
+
+    if (m_pEmulatorTeletypeBuffer != NULL)
+    {
+        ::free(m_pEmulatorTeletypeBuffer);
+        m_pEmulatorTeletypeBuffer = NULL;
     }
 }
 

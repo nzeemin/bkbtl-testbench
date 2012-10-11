@@ -14,7 +14,7 @@ BKBTL. If not, see <http://www.gnu.org/licenses/>. */
 #include "Emulator.h"
 
 
-void Test_Basic10()
+void Test01_Basic10()
 {
     Test_Init(_T("TEST 1: BASIC BK0010"), BK_CONF_BK0010_BASIC);
 
@@ -59,7 +59,7 @@ void Test_Basic10()
     Test_Done();
 }
 
-void Test_Focal10()
+void Test02_Focal10()
 {
     Test_Init(_T("TEST 2: Focal BK0010"), BK_CONF_BK0010_FOCAL);
 
@@ -86,13 +86,36 @@ void Test_Focal10()
     Test_Done();
 }
 
+void Test03_Tmos()
+{
+    Test_Init(_T("TEST 3: TMOS tests"), BK_CONF_BK0010_FDD);
+
+    Emulator_Run(50);
+    //Test_SaveScreenshot(_T("test03_01.bmp"));
+    Test_LoadBin(_T("data\\791401.bin"));
+    Emulator_AttachTeletypeBuffer();
+    Emulator_KeyboardSequence("S1000\n");
+    //Test_SaveScreenshot(_T("test03_02.bmp"));
+    Emulator_Run(300);  // Wait while the test runs 3 times
+    const char * teletype = Emulator_GetTeletypeBuffer();
+    if (0 == strcmp(teletype, "\r\n\x0ek prohod\r\n\x0ek prohod\r\n\x0ek prohod"))
+        Test_LogInfo(_T("Teletype check passed"));
+    else
+        Test_LogError(_T("Teletype check FAILED"));
+    Emulator_DetachTeletypeBuffer();
+    //Test_SaveScreenshot(_T("test03_03.bmp"));
+
+    Test_Done();
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
     SYSTEMTIME timeFrom;  ::GetLocalTime(&timeFrom);
     Test_LogInfo(_T("Initialization..."));
 
-    Test_Basic10();
-    Test_Focal10();
+    Test01_Basic10();
+    Test02_Focal10();
+    Test03_Tmos();
 
     Test_LogInfo(_T("Finalization..."));
     SYSTEMTIME timeTo;  ::GetLocalTime(&timeTo);

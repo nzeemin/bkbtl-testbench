@@ -294,6 +294,15 @@ void Test_CreateDiskImage(LPCTSTR sFileName, int tracks)
     ::CloseHandle(hFile);
 }
 
+void Test_LoadBin(LPCTSTR strFileName)
+{
+    if (! Emulator_LoadBin(strFileName))
+    {
+        Test_LogFormat('E', _T("FAILED to load BIN file %s"), strFileName);
+        exit(1);
+    }
+}
+
 //void Test_SaveStateImage(LPCTSTR sFileName)
 //{
 //    if (Emulator_SaveImage(sFileName))

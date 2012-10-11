@@ -45,5 +45,11 @@ void Emulator_KeyboardPressRelease(BYTE bkscan, int timeout = 3);
 void Emulator_KeyboardPressReleaseChar(char ch, int timeout = 3);
 void Emulator_KeyboardSequence(const char * str);
 
+BOOL Emulator_LoadBin(LPCTSTR strFileName);
+
+void Emulator_AttachTeletypeBuffer(int bufferSize = 1024);
+void Emulator_DetachTeletypeBuffer();
+const char * Emulator_GetTeletypeBuffer();
+
 
 //////////////////////////////////////////////////////////////////////
