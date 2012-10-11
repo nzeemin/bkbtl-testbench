@@ -31,9 +31,13 @@ void Test_Basic10()
     Emulator_Run(25);  // Wait 1 second
     Test_CheckScreenshot(_T("data\\test01_02.bmp"));
 
-    //Emulator_KeyboardSequence("1 ;1234567890-/\n");
-    //Emulator_KeyboardSequence("2 +!\"#$%&'(){=?\n");
-    //Emulator_KeyboardSequence("3 JCUKENG[]ZH*}\n");
+    Emulator_KeyboardSequence("CLS\n");
+    Emulator_KeyboardSequence("1  !\"#$%&'()*+,-./\n");
+    Emulator_KeyboardSequence("2 0123456789:;<=>?\n");
+    Emulator_KeyboardSequence("3 @[\\]^_ `{|}~\n");
+    Emulator_KeyboardSequence("4 ABCDEFGHIJKLMNOPQRSTUVWXYZ\n");
+    Emulator_KeyboardSequence("5 abcdefghijklmnopqrstuvwxyz\n");
+    Test_SaveScreenshot(_T("test01_03.bmp"));
 
     // BASIC speed test by Sergey Frolov, see http://www.leningrad.su/calc/speed.php
     Emulator_Reset();
