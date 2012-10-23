@@ -17,6 +17,9 @@ BKBTL. If not, see <http://www.gnu.org/licenses/>. */
 //////////////////////////////////////////////////////////////////////
 
 DWORD m_dwTotalEmulatorUptime = 0;  // Total BK uptime, seconds
+int m_nCommon_TestsStarted = 0;
+bool m_okCommon_CurrentTestFailed = false;
+int m_nCommon_TestsFailed = 0;
 
 
 //////////////////////////////////////////////////////////////////////
@@ -157,7 +160,10 @@ void Test_Log(char eventtype, LPCTSTR message)
     HANDLE hStdOut = ::GetStdHandle(STD_OUTPUT_HANDLE);
     WORD fgcolor = FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE;
     if (eventtype == 'E')
+    {
         fgcolor = FOREGROUND_RED|FOREGROUND_INTENSITY;
+        m_okCommon_CurrentTestFailed = true;
+    }
     else if (eventtype == '!')
         fgcolor = FOREGROUND_GREEN|FOREGROUND_INTENSITY;
     //TODO: Show BK uptime
@@ -186,6 +192,9 @@ void Test_Init(LPCTSTR sTestTitle, int configuration)
 {
     Test_Log('!', sTestTitle);
 
+    m_nCommon_TestsStarted++;
+    m_okCommon_CurrentTestFailed = false;
+
     if (! Emulator_Init())
         Test_Log('E', _T("FAILED to initialize the emulator."));
 
@@ -197,11 +206,16 @@ void Test_Done()
 {
     m_dwTotalEmulatorUptime += Emulator_GetUptime();
     Emulator_Done();
+
+    if (m_okCommon_CurrentTestFailed)
+        m_nCommon_TestsFailed++;
 }
 
 void Test_LogSummary()
 {
     Test_LogFormat('i', _T("Emulator time spent: %u seconds"), m_dwTotalEmulatorUptime);
+    char evtype = (m_nCommon_TestsFailed == 0) ? '!' : 'E';
+    Test_LogFormat(evtype, _T("TOTAL tests started: %u, failed: %u"), m_nCommon_TestsStarted, m_nCommon_TestsFailed);
 }
 
 //void Test_LoadROMCartridge(int slot, LPCTSTR sFilePath)
