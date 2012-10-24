@@ -23,14 +23,17 @@ void Test01_Basic10()
 
     Emulator_KeyboardSequence("PRINT PI\n");
 
+    Emulator_KeyboardSequence("05 COLOR 2\n");
     Emulator_KeyboardSequence("10 FOR I=32 TO 127\n");
     Emulator_KeyboardSequence("20 PRINT CHR$(I);\n");
     Emulator_KeyboardSequence("30 IF I MOD 16 = 15 THEN PRINT\n");
     Emulator_KeyboardSequence("50 NEXT I\n");
+    Emulator_KeyboardSequence("55 COLOR 3\n");
     Emulator_KeyboardSequence("RUN\n");
     Emulator_Run(25);  // Wait 1 second
-    Test_CheckScreenshot(_T("data\\test01_02.bmp"));
+    Test_CheckScreenshot(_T("data\\test01_02.bmp"), 1);
 
+    Emulator_KeyboardSequence("COLOR 1\n");
     Emulator_KeyboardSequence("CLS\n");
     Emulator_KeyboardSequence("1  !\"#$%&'()*+,-./\n");
     Emulator_KeyboardSequence("2 0123456789:;<=>?\n");
