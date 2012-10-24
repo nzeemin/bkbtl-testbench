@@ -136,7 +136,9 @@ void Test04_MSTD11()
 {
     Test_Init(_T("TEST 4: BK0011M MSTD"), BK_CONF_BK0011);
 
+    Emulator_KeyboardEvent(0040, TRUE);  // Hold Spacebar to boot to monitor
     Emulator_Run(75);
+    Emulator_KeyboardEvent(0040, FALSE);
     Emulator_KeyboardSequence("160100G");
     Emulator_Run(50);
     Test_CheckScreenshot(_T("data\\test04_01.bmp"), 1);  // Menu
@@ -196,7 +198,7 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(0137);  // з }
     Emulator_KeyboardPressRelease(0057);  // / ?
     Emulator_KeyboardPressRelease(0023);  // бя
-    Emulator_KeyboardPressRelease(0106);  // т F  //TODO: with SU
+    Emulator_KeyboardPressRelease(0006);  // SU + F
     Emulator_KeyboardPressRelease(0131);  // ш Y
     Emulator_KeyboardPressRelease(0127);  // б W
     Emulator_KeyboardPressRelease(0101);  // ю A
@@ -224,7 +226,7 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(0032);  // Up
     Emulator_KeyboardPressRelease(0031);  // Right
     Emulator_KeyboardPressRelease(0033);  // Down
-    Emulator_KeyboardPressRelease(0040);  //TODO: Space with ???
+    Emulator_KeyboardPressRelease(0040);  //TODO: AP2? + Space
     Emulator_KeyboardPressRelease(0017);  // LAT
     Test_SaveScreenshot(_T("test04_04_2.bmp"), 1);
 
