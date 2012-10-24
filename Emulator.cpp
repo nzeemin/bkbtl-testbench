@@ -61,12 +61,60 @@ const LPCTSTR FILENAME_BKROM_BK11M_MSTD = _T("b11m_mstd.rom");
 //////////////////////////////////////////////////////////////////////
 
 
+//Прототип функции преобразования экрана
+// Input:
+//   pVideoBuffer   Исходные данные, биты экрана БК
+//   okSmallScreen  Признак "малого" экрана
+//   pPalette       Палитра
+//   scroll         Текущее значение скроллинга
+//   pImageBits     Результат, 32-битный цвет, размер для каждой функции свой
+typedef void (CALLBACK* PREPARE_SCREEN_CALLBACK)(const BYTE* pVideoBuffer, int okSmallScreen, const DWORD* pPalette, int scroll, void* pImageBits);
+
+void CALLBACK Emulator_PrepareScreenBW512x256(const BYTE* pVideoBuffer, int okSmallScreen, const DWORD* pPalette, int scroll, void* pImageBits);
+void CALLBACK Emulator_PrepareScreenColor512x256(const BYTE* pVideoBuffer, int okSmallScreen, const DWORD* pPalette, int scroll, void* pImageBits);
+
+struct ScreenModeStruct
+{
+    int width;
+    int height;
+    PREPARE_SCREEN_CALLBACK callback;
+}
+static ScreenModeReference[] = {
+    { 512, 256, Emulator_PrepareScreenBW512x256 },
+    { 512, 256, Emulator_PrepareScreenColor512x256 },
+};
+
 const DWORD ScreenView_BWPalette[4] = {
     0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF
 };
 
+const DWORD ScreenView_ColorPalette[4] = {
+    0x000000, 0x0000FF, 0x00FF00, 0xFF0000
+};
+
+const DWORD ScreenView_ColorPalettes[16][4] = {
+    //                                     Palette#     01           10          11
+    0x000000, 0x0000FF, 0x00FF00, 0xFF0000,  // 00    синий   |   зеленый  |  красный
+    0x000000, 0xFFFF00, 0xFF00FF, 0xFF0000,  // 01   желтый   |  сиреневый |  красный
+    0x000000, 0x00FFFF, 0x0000FF, 0xFF00FF,  // 02   голубой  |    синий   | сиреневый
+    0x000000, 0x00FF00, 0x00FFFF, 0xFFFF00,  // 03   зеленый  |   голубой  |  желтый
+    0x000000, 0xFF00FF, 0x00FFFF, 0xFFFFFF,  // 04  сиреневый |   голубой  |   белый
+    0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF,  // 05    белый   |    белый   |   белый
+    0x000000, 0x7F0000, 0x7F0000, 0xFF0000,  // 06  темн-красн| красн-корич|  красный
+    0x000000, 0x00FF7F, 0x00FF7F, 0xFFFF00,  // 07  салатовый | светл-зелен|  желтый
+    0x000000, 0xFF00FF, 0x7F00FF, 0x7F007F,  // 08  фиолетовый| фиол-синий | сиреневый
+    0x000000, 0x00FF7F, 0x7F00FF, 0x7F0000,  // 09 светл-зелен| фиол-синий |красн-корич
+    0x000000, 0x00FF7F, 0x7F007F, 0x7F0000,  // 10  салатовый | фиолетовый |темн-красный
+    0x000000, 0x00FFFF, 0xFFFF00, 0xFF0000,  // 11   голубой  |   желтый   |  красный
+    0x000000, 0xFF0000, 0x00FF00, 0x00FFFF,  // 12   красный  |   зеленый  |  голубой
+    0x000000, 0x00FFFF, 0xFFFF00, 0xFFFFFF,  // 13   голубой  |   желтый   |   белый
+    0x000000, 0xFFFF00, 0x00FF00, 0xFFFFFF,  // 14   желтый   |   зеленый  |   белый 
+    0x000000, 0x00FFFF, 0x00FF00, 0xFFFFFF,  // 15   голубой  |   зеленый  |   белый
+};
+
 
 //////////////////////////////////////////////////////////////////////
+
 
 BOOL Emulator_LoadRomFile(LPCTSTR strFileName, BYTE* buffer, DWORD fileOffset, DWORD bytesToRead)
 {
@@ -351,7 +399,51 @@ void CALLBACK Emulator_PrepareScreenBW512x256(const BYTE* pVideoBuffer, int okSm
     }
 }
 
-void Emulator_PrepareScreenRGB32(void* pImageBits)
+void CALLBACK Emulator_PrepareScreenColor512x256(const BYTE* pVideoBuffer, int okSmallScreen, const DWORD* pPalette, int scroll, void* pImageBits)
+{
+    int linesToShow = okSmallScreen ? 64 : 256;
+    for (int y = 0; y < linesToShow; y++)
+    {
+        int yy = (y + scroll) & 0377;
+        const WORD* pVideo = (WORD*)(pVideoBuffer + yy * 0100);
+        DWORD* pBits = (DWORD*)pImageBits + (255 - y) * 512;
+        for (int x = 0; x < 512 / 16; x++)
+        {
+            WORD src = *pVideo;
+
+            for (int bit = 0; bit < 16; bit += 2)
+            {
+                DWORD color = pPalette[src & 3];
+                *pBits = color;
+                pBits++;
+                *pBits = color;
+                pBits++;
+                src = src >> 2;
+            }
+
+            pVideo++;
+        }
+    }
+    if (okSmallScreen)
+    {
+        memset((DWORD*)pImageBits, 0, (256 - 64) * 512 * sizeof(DWORD));
+    }
+}
+
+const DWORD * Emulator_GetPalette(int screenMode)
+{
+    const DWORD * pPalette = ScreenView_BWPalette;
+    if ((screenMode & 1) != 0)
+    {
+        if ((g_nEmulatorConfiguration & BK_COPT_BK0011) == 0)
+            pPalette = (DWORD*)ScreenView_ColorPalette;
+        else
+            pPalette = (DWORD*)ScreenView_ColorPalettes[g_pBoard->GetPalette()];
+    }
+    return pPalette;
+}
+
+void Emulator_PrepareScreenRGB32(void* pImageBits, int screenMode)
 {
     if (pImageBits == NULL) return;
 
@@ -361,20 +453,14 @@ void Emulator_PrepareScreenRGB32(void* pImageBits)
     scroll &= 0377;
     scroll = (scroll >= 0330) ? scroll - 0330 : 050 + scroll;
 
-    // Get palette
-    const DWORD * pPalette = ScreenView_BWPalette;
-    //if ((g_nEmulatorConfiguration & BK_COPT_BK0011) == 0)
-    //    pPalette = (DWORD*)ScreenView_ColorPalette;
-    //else
-    //    pPalette = (DWORD*)ScreenView_ColorPalettes[g_pBoard->GetPalette()];
+    const DWORD * pPalette = Emulator_GetPalette(screenMode);
 
     const BYTE* pVideoBuffer = g_pBoard->GetVideoBuffer();
     ASSERT(pVideoBuffer != NULL);
 
     // Render to bitmap
-    Emulator_PrepareScreenBW512x256(pVideoBuffer, okSmallScreen, pPalette, scroll, pImageBits);
-    //PREPARE_SCREEN_CALLBACK callback = ScreenModeReference[screenMode].callback;
-    //callback(pVideoBuffer, okSmallScreen, pPalette, scroll, pImageBits);
+    PREPARE_SCREEN_CALLBACK callback = ScreenModeReference[screenMode].callback;
+    callback(pVideoBuffer, okSmallScreen, pPalette, scroll, pImageBits);
 }
 
 DWORD Emulator_GetUptime()
@@ -394,7 +480,7 @@ BOOL Emulator_Run(int frames)
     return TRUE;
 }
 
-BOOL Emulator_SaveScreenshot(LPCTSTR sFileName, const DWORD * bits)
+BOOL Emulator_SaveScreenshot(LPCTSTR sFileName, const DWORD * bits, const DWORD * palette)
 {
     ASSERT(sFileName != NULL);
     ASSERT(bits != NULL);
@@ -429,7 +515,6 @@ BOOL Emulator_SaveScreenshot(LPCTSTR sFileName, const DWORD * bits)
     // Prepare the image data
     const DWORD * psrc = bits;
     BYTE * pdst = pData;
-    const DWORD * palette = ScreenView_BWPalette;
     for (int i = 0; i < 512 * 256; i++)
     {
         DWORD rgb = *psrc;
@@ -483,13 +568,14 @@ BOOL Emulator_SaveScreenshot(LPCTSTR sFileName, const DWORD * bits)
     return TRUE;
 }
 
-BOOL Emulator_SaveScreenshot(LPCTSTR sFileName)
+BOOL Emulator_SaveScreenshot(LPCTSTR sFileName, int screenMode)
 {
     DWORD * bits = (DWORD *) ::malloc(512 * 256 * 4);
 
-    Emulator_PrepareScreenRGB32(bits);
+    Emulator_PrepareScreenRGB32(bits, screenMode);
 
-    BOOL result = Emulator_SaveScreenshot(sFileName, bits);
+    const DWORD * palette = Emulator_GetPalette(screenMode);
+    BOOL result = Emulator_SaveScreenshot(sFileName, bits, palette);
 
     ::free(bits);
 
@@ -513,7 +599,7 @@ int Emulator_CompareScreens(const DWORD * scr1, const DWORD * scr2)
 }
 
 // Returns: amount of different pixels
-int Emulator_CheckScreenshot(LPCTSTR sFileName, const DWORD * bits, DWORD * tempbits)
+int Emulator_CheckScreenshot(LPCTSTR sFileName, const DWORD * bits, const DWORD * palette, DWORD * tempbits)
 {
     ASSERT(sFileName != NULL);
     ASSERT(bits != NULL);
@@ -564,7 +650,7 @@ int Emulator_CheckScreenshot(LPCTSTR sFileName, const DWORD * bits, DWORD * temp
             color = (*psrc) & 15;
             psrc++;
         }
-        *pdst = ScreenView_BWPalette[color];
+        *pdst = palette[color];
         pdst++;
     }
 
@@ -579,14 +665,15 @@ int Emulator_CheckScreenshot(LPCTSTR sFileName, const DWORD * bits, DWORD * temp
     return result;
 }
 
-int Emulator_CheckScreenshot(LPCTSTR sFileName)
+int Emulator_CheckScreenshot(LPCTSTR sFileName, int screenMode)
 {
     DWORD * bits = (DWORD *) ::malloc(512 * 256 * 4);
     DWORD * tempbits = (DWORD *) ::malloc(512 * 256 * 4);
 
-    Emulator_PrepareScreenRGB32(bits);
+    Emulator_PrepareScreenRGB32(bits, screenMode);
 
-    int result = Emulator_CheckScreenshot(sFileName, bits, tempbits);
+    const DWORD * palette = Emulator_GetPalette(screenMode);
+    int result = Emulator_CheckScreenshot(sFileName, bits, palette, tempbits);
 
     ::free(tempbits);
     ::free(bits);

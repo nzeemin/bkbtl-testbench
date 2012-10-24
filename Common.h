@@ -81,8 +81,8 @@ void Test_LogSummary();
 void Test_OpenTape(LPCTSTR sFilePath);
 void Test_CloseTape();
 
-void Test_SaveScreenshot(LPCTSTR sFileName);
-void Test_CheckScreenshot(LPCTSTR sFileName);
+void Test_SaveScreenshot(LPCTSTR sFileName, int screenMode = 0);
+void Test_CheckScreenshot(LPCTSTR sFileName, int screenMode = 0);
 void Test_SaveScreenshotSeria(LPCTSTR sFileNameTemplate, int count, int frameStep);
 
 void Test_CopyFile(LPCTSTR sFileNameFrom, LPCTSTR sFileNameTo);

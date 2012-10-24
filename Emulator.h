@@ -38,8 +38,8 @@ int  Emulator_SystemFrame();
 DWORD Emulator_GetUptime();  // BK uptime, in seconds
 
 BOOL Emulator_Run(int frames);
-BOOL Emulator_SaveScreenshot(LPCTSTR sFileName);
-int  Emulator_CheckScreenshot(LPCTSTR sFileName);
+BOOL Emulator_SaveScreenshot(LPCTSTR sFileName, int screenMode);
+int  Emulator_CheckScreenshot(LPCTSTR sFileName, int screenMode);
 
 void Emulator_KeyboardPressRelease(BYTE bkscan, int timeout = 3);
 void Emulator_KeyboardPressReleaseChar(char ch, int timeout = 3);

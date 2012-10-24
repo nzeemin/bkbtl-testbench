@@ -19,7 +19,7 @@ void Test01_Basic10()
     Test_Init(_T("TEST 1: BASIC BK0010"), BK_CONF_BK0010_BASIC);
 
     Emulator_Run(50);
-    Test_CheckScreenshot(_T("data\\test01_01.bmp"));
+    Test_CheckScreenshot(_T("data\\test01_01.bmp"), 1);
 
     Emulator_KeyboardSequence("PRINT PI\n");
 

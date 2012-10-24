@@ -244,9 +244,9 @@ void Test_LogSummary()
 //    Emulator_CloseTape();
 //}
 
-void Test_SaveScreenshot(LPCTSTR sFileName)
+void Test_SaveScreenshot(LPCTSTR sFileName, int screenMode)
 {
-    if (Emulator_SaveScreenshot(sFileName))
+    if (Emulator_SaveScreenshot(sFileName, screenMode))
         Test_LogFormat('i', _T("Saved screenshot %s"), sFileName);
     else
         Test_LogFormat('E', _T("FAILED to save screenshot %s"), sFileName);
@@ -263,9 +263,9 @@ void Test_SaveScreenshotSeria(LPCTSTR sFileNameTemplate, int count, int frameSte
     }
 }
 
-void Test_CheckScreenshot(LPCTSTR sFileName)
+void Test_CheckScreenshot(LPCTSTR sFileName, int screenMode)
 {
-    int diff = Emulator_CheckScreenshot(sFileName);
+    int diff = Emulator_CheckScreenshot(sFileName, screenMode);
     if (diff == 0)
     {
         Test_LogFormat('i', _T("Checked screenshot %s"), sFileName);
