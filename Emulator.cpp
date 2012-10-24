@@ -681,6 +681,12 @@ int Emulator_CheckScreenshot(LPCTSTR sFileName, int screenMode)
     return result;
 }
 
+void Emulator_KeyboardEvent(BYTE bkscan, BOOL okPressed)
+{
+    g_pBoard->KeyboardEvent(bkscan, okPressed, FALSE);
+    Emulator_Run(1);
+}
+
 void Emulator_KeyboardPressRelease(BYTE bkscan, int timeout)
 {
     g_pBoard->KeyboardEvent(bkscan, TRUE, FALSE);
