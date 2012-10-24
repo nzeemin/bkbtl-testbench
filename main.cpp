@@ -56,8 +56,29 @@ void Test01_Basic10()
     Emulator_KeyboardSequence("40 PRINT A, B\n");
     Emulator_KeyboardSequence("RUN\n");
     Emulator_Run(1084);
-    //Test_SaveScreenshotSeria(_T("video\\test01_%04u.bmp"), 12, 1);
     Test_CheckScreenshot(_T("data\\test01_04.bmp"));
+
+    // Random number generator check by Leonid Broukhis http://www.mailcom.com/bk0010/
+    Emulator_Reset();
+    Emulator_Run(50);
+    Emulator_KeyboardSequence("10 CLS\n");
+    Emulator_KeyboardSequence("20 FOR I=0 TO 1000\n");
+    Emulator_KeyboardSequence("30 PSET (RND(1)*512, RND(1)*240)\n");
+    Emulator_KeyboardSequence("40 NEXT\n");
+    Emulator_KeyboardSequence("RUN\n");
+    Emulator_Run(230);
+    Test_CheckScreenshot(_T("data\\test01_05.bmp"));
+    Emulator_Reset();
+    Emulator_Run(50);
+    Emulator_KeyboardSequence("10 CLS\n");
+    Emulator_KeyboardSequence("20 FOR I%=0% TO 32766%\n");
+    Emulator_KeyboardSequence("30 PSET (RND(1)*256%, RND(1)*240%), RND(1)*3%+1%\n");
+    Emulator_KeyboardSequence("40 NEXT\n");
+    Emulator_KeyboardSequence("RUN\n");
+    Emulator_Run(10950);
+    Test_CheckScreenshot(_T("data\\test01_06.bmp"), 1);
+
+    //Test_SaveScreenshotSeria(_T("video\\test01_%04u.bmp"), 20, 10);
 
     Test_Done();
 }
