@@ -108,6 +108,70 @@ void Test03_Tmos()
     Test_Done();
 }
 
+void Test04_MSTD11()
+{
+    Test_Init(_T("TEST 4: BK0011M MSTD"), BK_CONF_BK0011);
+
+    Emulator_Run(75);
+    Emulator_KeyboardSequence("160100G");
+    Emulator_Run(50);
+    Test_CheckScreenshot(_T("data\\test04_01.bmp"), 1);  // Menu
+    Emulator_KeyboardPressRelease(033);  // Down
+    Emulator_KeyboardPressRelease(033);  // Down
+    Emulator_KeyboardPressRelease(012);  // Enter -- start ROM test
+    Emulator_Run(16 * 25);
+    Test_CheckScreenshot(_T("data\\test04_03.bmp"), 1);  // ROM test results
+    Emulator_KeyboardPressRelease(012);  // Enter -- exit the test
+    Emulator_Run(25);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Emulator_KeyboardPressRelease(033);  // Down
+    Emulator_KeyboardPressRelease(033);  // Down
+    Emulator_KeyboardPressRelease(033);  // Down
+    Emulator_KeyboardPressRelease(033);  // Down
+    Emulator_KeyboardPressRelease(012);  // Enter -- start palette test
+    Emulator_Run(50);
+    Test_CheckScreenshot(_T("data\\test04_07_00.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_01.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_02.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_03.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_04.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_05.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_06.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_07.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_08.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_09.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_10.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_11.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_12.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_13.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_14.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Test_CheckScreenshot(_T("data\\test04_07_15.bmp"), 1);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Emulator_KeyboardPressRelease(012);  // Enter -- exit the test
+    Emulator_Run(25);
+    Emulator_KeyboardPressRelease(033);  // Down
+    Emulator_KeyboardPressRelease(012);  // Enter -- open help page
+    Emulator_Run(50);
+    Test_CheckScreenshot(_T("data\\test04_08.bmp"), 1);
+
+    Test_Done();
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
     SYSTEMTIME timeFrom;  ::GetLocalTime(&timeFrom);
@@ -116,6 +180,7 @@ int _tmain(int argc, _TCHAR* argv[])
     Test01_Basic10();
     Test02_Focal10();
     Test03_Tmos();
+    Test04_MSTD11();
 
     Test_LogInfo(_T("Finalization..."));
     SYSTEMTIME timeTo;  ::GetLocalTime(&timeTo);
