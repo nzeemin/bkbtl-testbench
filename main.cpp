@@ -283,6 +283,26 @@ void Test04_MSTD11()
     Test_Done();
 }
 
+void Test05_Games10()
+{
+    Test_Init(_T("TEST 5: BK0010 Games"), BK_CONF_BK0010_FDD);
+
+    Emulator_Run(50);
+    Test_LoadBin(_T("data\\klad.bin"));
+    Emulator_KeyboardSequence("S1000\n");
+    Emulator_Run(20);
+    Test_CheckScreenshot(_T("data\\test05_01.bmp"), 1);
+    Emulator_KeyboardPressRelease(012);  // Enter
+    Emulator_Run(40);
+    Emulator_KeyboardPressRelease(0061);  // 1
+    Emulator_Run(20);
+    Test_CheckScreenshot(_T("data\\test05_02.bmp"), 1);
+
+    //TODO
+
+    Test_Done();
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
     SYSTEMTIME timeFrom;  ::GetLocalTime(&timeFrom);
@@ -292,6 +312,7 @@ int _tmain(int argc, _TCHAR* argv[])
     Test02_Focal10();
     Test03_Tmos();
     Test04_MSTD11();
+    Test05_Games10();
 
     Test_LogInfo(_T("Finalization..."));
     SYSTEMTIME timeTo;  ::GetLocalTime(&timeTo);
