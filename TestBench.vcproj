@@ -222,6 +222,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\util\WavPcmFile.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -254,6 +258,10 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\util\WavPcmFile.h"
 				>
 			</File>
 		</Filter>

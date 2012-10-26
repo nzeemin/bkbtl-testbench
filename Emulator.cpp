@@ -15,7 +15,7 @@ UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
 #include <Share.h>
 #include "Emulator.h"
 #include "emubase\Emubase.h"
-//#include "util/WavPcmFile.h"
+#include "util/WavPcmFile.h"
 
 //NOTE: I know, we use unsafe string functions
 #pragma warning( disable: 4996 )
@@ -39,6 +39,12 @@ long m_nUptimeFrameCount = 0;
 char * m_pEmulatorTeletypeBuffer = NULL;
 int m_nEmulatorTeletypeBufferSize = 0;
 int m_nEmulatorTeletypeBufferIndex = 0;
+
+HWAVPCMFILE m_hTapeWavPcmFile = (HWAVPCMFILE) INVALID_HANDLE_VALUE;
+#define TAPE_BUFFER_SIZE 624
+BYTE m_TapeBuffer[TAPE_BUFFER_SIZE];
+BOOL CALLBACK Emulator_TapeReadCallback(UINT samples);
+BOOL CALLBACK Emulator_TapeWriteCallback(UINT samples);
 
 
 //////////////////////////////////////////////////////////////////////
@@ -373,6 +379,77 @@ int Emulator_SystemFrame()
 BOOL Emulator_AttachFloppyImage(int slot, LPCTSTR sFilePath)
 {
     return g_pBoard->AttachFloppyImage(slot, sFilePath);
+}
+
+// Tape emulator callback used to read a tape recorded data.
+// Input:
+//   samples    Number of samples to play.
+// Output:
+//   result     Bit to put in tape input port.
+BOOL CALLBACK Emulator_TapeReadCallback(unsigned int samples)
+{
+	if (samples == 0) return 0;
+
+    // Scroll buffer
+    memmove(m_TapeBuffer, m_TapeBuffer + samples, TAPE_BUFFER_SIZE - samples);
+
+	UINT value = 0;
+	for (UINT i = 0; i < samples; i++)
+	{
+		value = WavPcmFile_ReadOne(m_hTapeWavPcmFile);
+        *(m_TapeBuffer + TAPE_BUFFER_SIZE - samples + i) = (BYTE)((value >> 24) & 0xff);
+	}
+	BOOL result = (value >= UINT_MAX / 2);
+	return result;
+}
+
+void CALLBACK Emulator_TapeWriteCallback(int value, UINT samples)
+{
+    if (samples == 0) return;
+
+    // Scroll buffer
+    memmove(m_TapeBuffer, m_TapeBuffer + samples, TAPE_BUFFER_SIZE - samples);
+
+    // Write samples to the file
+    for (UINT i = 0; i < samples; i++)
+    {
+        WavPcmFile_WriteOne(m_hTapeWavPcmFile, value);
+        //TODO: Check WavPcmFile_WriteOne result
+        *(m_TapeBuffer + TAPE_BUFFER_SIZE - samples + i) = (BYTE)((value >> 24) & 0xff);
+    }
+}
+
+BOOL Emulator_OpenTape(LPCTSTR sFilePath)
+{
+	m_hTapeWavPcmFile = WavPcmFile_Open(sFilePath);
+	if (m_hTapeWavPcmFile == INVALID_HANDLE_VALUE)
+		return FALSE;
+
+    int sampleRate = WavPcmFile_GetFrequency(m_hTapeWavPcmFile);
+    g_pBoard->SetTapeReadCallback(Emulator_TapeReadCallback, sampleRate);
+
+    return TRUE;
+}
+
+BOOL Emulator_CreateTape(LPCTSTR sFilePath)
+{
+	m_hTapeWavPcmFile = WavPcmFile_Create(sFilePath, 44100);
+	if (m_hTapeWavPcmFile == INVALID_HANDLE_VALUE)
+		return FALSE;
+
+    int sampleRate = WavPcmFile_GetFrequency(m_hTapeWavPcmFile);
+    g_pBoard->SetTapeWriteCallback(Emulator_TapeWriteCallback, sampleRate);
+
+    return TRUE;
+}
+
+void Emulator_CloseTape()
+{
+    g_pBoard->SetTapeReadCallback(NULL, 0);
+    g_pBoard->SetTapeWriteCallback(NULL, 0);
+
+    WavPcmFile_Close(m_hTapeWavPcmFile);
+	m_hTapeWavPcmFile = (HWAVPCMFILE) INVALID_HANDLE_VALUE;
 }
 
 void CALLBACK Emulator_PrepareScreenBW512x256(const BYTE* pVideoBuffer, int okSmallScreen, const DWORD* pPalette, int scroll, void* pImageBits)

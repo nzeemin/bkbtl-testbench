@@ -225,17 +225,22 @@ void Test_AttachFloppyImage(int slot, LPCTSTR sFilePath)
         Test_LogFormat('E', _T("FAILED to attach floppy image %s"), sFilePath);
 }
 
-//void Test_OpenTape(LPCTSTR sFilePath)
-//{
-//    BOOL res = Emulator_OpenTape(sFilePath);
-//    if (!res)
-//        Test_LogFormat('E', _T("FAILED to open tape image %s"), sFilePath);
-//}
-//
-//void Test_CloseTape()
-//{
-//    Emulator_CloseTape();
-//}
+void Test_OpenTape(LPCTSTR sFilePath)
+{
+    BOOL res = Emulator_OpenTape(sFilePath);
+    if (!res)
+        Test_LogFormat('E', _T("FAILED to open tape image %s"), sFilePath);
+}
+void Test_CreateTape(LPCTSTR sFilePath)
+{
+    BOOL res = Emulator_CreateTape(sFilePath);
+    if (!res)
+        Test_LogFormat('E', _T("FAILED to create tape image %s"), sFilePath);
+}
+void Test_CloseTape()
+{
+    Emulator_CloseTape();
+}
 
 void Test_SaveScreenshot(LPCTSTR sFileName, int screenMode)
 {

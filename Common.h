@@ -78,6 +78,7 @@ void Test_LogSummary();
 void Test_AttachFloppyImage(int slot, LPCTSTR sFilePath);
 
 void Test_OpenTape(LPCTSTR sFilePath);
+void Test_CreateTape(LPCTSTR sFilePath);
 void Test_CloseTape();
 
 void Test_SaveScreenshot(LPCTSTR sFileName, int screenMode = 0);
