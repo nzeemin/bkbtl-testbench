@@ -243,17 +243,17 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(033);  // Down
     Emulator_KeyboardPressRelease(012);  // Enter -- start tape port test
     Emulator_Run(50);
-    Test_SaveScreenshot(_T("test04_05_1.bmp"), 1);
+    Test_CheckScreenshot(_T("data\\test04_05_1.bmp"), 1);
     Test_CreateTape(_T("temp\\test04_05.wav"));
     Emulator_KeyboardPressRelease(012);  // Enter
     Emulator_Run(10 * 25);
     Test_CloseTape();
-    Test_SaveScreenshot(_T("test04_05_2.bmp"), 1);
+    Test_CheckScreenshot(_T("data\\test04_05_2.bmp"), 1);
     Test_OpenTape(_T("temp\\test04_05.wav"));
     Emulator_KeyboardPressRelease(012);  // Enter
     Emulator_Run(10 * 25);
     Test_CloseTape();
-    Test_SaveScreenshot(_T("test04_05_3.bmp"), 1);
+    Test_CheckScreenshot(_T("data\\test04_05_3.bmp"), 1);
     Emulator_KeyboardPressRelease(012);  // Enter -- exit the test
 
     // Palette test
@@ -345,12 +345,12 @@ int _tmain(int argc, _TCHAR* argv[])
     SYSTEMTIME timeFrom;  ::GetLocalTime(&timeFrom);
     Test_LogInfo(_T("Initialization..."));
 
-    //Test01_Basic10();
-    //Test02_Focal10();
-    //Test03_Tmos();
+    Test01_Basic10();
+    Test02_Focal10();
+    Test03_Tmos();
     Test04_MSTD11();
-    //Test05_Games10();
-    //Test06_RT11();
+    Test05_Games10();
+    Test06_RT11();
 
     Test_LogInfo(_T("Finalization..."));
     SYSTEMTIME timeTo;  ::GetLocalTime(&timeTo);
