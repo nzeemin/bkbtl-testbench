@@ -147,7 +147,7 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(033);  // Down
     Emulator_KeyboardPressRelease(012);  // Enter -- start RAM test
     Emulator_Run(80 * 25);
-    Test_SaveScreenshot(_T("test04_02.bmp"), 1);  // RAM test results
+    Test_CheckScreenshot(_T("data\\test04_02.bmp"), 1);  // RAM test results
     Emulator_KeyboardPressRelease(012);  // Enter -- exit the test
     Emulator_Run(50);
 
