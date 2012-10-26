@@ -218,19 +218,12 @@ void Test_LogSummary()
     Test_LogFormat(evtype, _T("TOTAL tests started: %u, failed: %u"), m_nCommon_TestsStarted, m_nCommon_TestsFailed);
 }
 
-//void Test_LoadROMCartridge(int slot, LPCTSTR sFilePath)
-//{
-//    BOOL res = Emulator_LoadROMCartridge(slot, sFilePath);
-//    if (!res)
-//        Test_LogError(_T("Failed to load ROM cartridge image."));
-//}
-//
-//void Test_AttachFloppyImage(int slot, LPCTSTR sFilePath)
-//{
-//    BOOL res = Emulator_AttachFloppyImage(slot, sFilePath);
-//    if (!res)
-//        Test_LogFormat('E', _T("FAILED to attach floppy image %s"), sFilePath);
-//}
+void Test_AttachFloppyImage(int slot, LPCTSTR sFilePath)
+{
+    BOOL res = Emulator_AttachFloppyImage(slot, sFilePath);
+    if (!res)
+        Test_LogFormat('E', _T("FAILED to attach floppy image %s"), sFilePath);
+}
 
 //void Test_OpenTape(LPCTSTR sFilePath)
 //{

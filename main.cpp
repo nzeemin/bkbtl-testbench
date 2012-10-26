@@ -143,8 +143,15 @@ void Test04_MSTD11()
     Emulator_Run(50);
     Test_CheckScreenshot(_T("data\\test04_01.bmp"), 1);  // Menu
 
-    // ROM test
+    // RAM test
     Emulator_KeyboardPressRelease(033);  // Down
+    Emulator_KeyboardPressRelease(012);  // Enter -- start RAM test
+    Emulator_Run(80 * 25);
+    Test_SaveScreenshot(_T("test04_02.bmp"), 1);  // RAM test results
+    Emulator_KeyboardPressRelease(012);  // Enter -- exit the test
+    Emulator_Run(50);
+
+    // ROM test
     Emulator_KeyboardPressRelease(033);  // Down
     Emulator_KeyboardPressRelease(012);  // Enter -- start ROM test
     Emulator_Run(16 * 25);
@@ -303,6 +310,20 @@ void Test05_Games10()
     Test_Done();
 }
 
+void Test06_RT11()
+{
+    Test_Init(_T("TEST 6: RT11 on BK0011M"), BK_CONF_BK0011_FDD);
+
+    Test_CopyFile(_T("data\\rt11v4_1.img"), _T("temp\\rt11v4_1.img"));
+    Test_AttachFloppyImage(0, _T("temp\\rt11v4_1.img"));
+    Emulator_Run(650);
+    Test_CheckScreenshot(_T("data\\test06_01.bmp"));
+    Emulator_Run(14 * 25);
+    Test_CheckScreenshot(_T("data\\test06_02.bmp"));
+
+    Test_Done();
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
     SYSTEMTIME timeFrom;  ::GetLocalTime(&timeFrom);
@@ -313,6 +334,7 @@ int _tmain(int argc, _TCHAR* argv[])
     Test03_Tmos();
     Test04_MSTD11();
     Test05_Games10();
+    Test06_RT11();
 
     Test_LogInfo(_T("Finalization..."));
     SYSTEMTIME timeTo;  ::GetLocalTime(&timeTo);

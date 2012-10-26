@@ -370,6 +370,11 @@ int Emulator_SystemFrame()
     return 1;
 }
 
+BOOL Emulator_AttachFloppyImage(int slot, LPCTSTR sFilePath)
+{
+    return g_pBoard->AttachFloppyImage(slot, sFilePath);
+}
+
 void CALLBACK Emulator_PrepareScreenBW512x256(const BYTE* pVideoBuffer, int okSmallScreen, const DWORD* pPalette, int scroll, void* pImageBits)
 {
     int linesToShow = okSmallScreen ? 64 : 256;

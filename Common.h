@@ -75,8 +75,7 @@ void Test_Init(LPCTSTR sTestTitle, int configuration);
 void Test_Done();
 void Test_LogSummary();
 
-//void Test_LoadROMCartridge(int slot, LPCTSTR sFilePath);
-//void Test_AttachFloppyImage(int slot, LPCTSTR sFilePath);
+void Test_AttachFloppyImage(int slot, LPCTSTR sFilePath);
 
 void Test_OpenTape(LPCTSTR sFilePath);
 void Test_CloseTape();

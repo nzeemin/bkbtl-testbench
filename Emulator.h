@@ -37,6 +37,8 @@ void Emulator_Reset();
 int  Emulator_SystemFrame();
 DWORD Emulator_GetUptime();  // BK uptime, in seconds
 
+BOOL Emulator_AttachFloppyImage(int slot, LPCTSTR sFilePath);
+
 BOOL Emulator_Run(int frames);
 BOOL Emulator_SaveScreenshot(LPCTSTR sFileName, int screenMode);
 int  Emulator_CheckScreenshot(LPCTSTR sFileName, int screenMode);
