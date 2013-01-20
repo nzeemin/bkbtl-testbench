@@ -86,13 +86,21 @@ void DebugLog(LPCTSTR message)
         // Create file
         Common_LogFile = CreateFile(TRACELOG_FILE_NAME,
                 GENERIC_WRITE, FILE_SHARE_READ, NULL,
-                OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+                CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     }
     SetFilePointer(Common_LogFile, 0, NULL, FILE_END);
 
     DWORD dwLength = lstrlen(message) * sizeof(TCHAR);
+
+    char ascii[256];  *ascii = 0;
+    WideCharToMultiByte(CP_ACP, 0, message, dwLength, ascii, 256, NULL, NULL);
+
     DWORD dwBytesWritten = 0;
-    WriteFile(Common_LogFile, message, dwLength, &dwBytesWritten, NULL);
+    //WriteFile(Common_LogFile, message, dwLength, &dwBytesWritten, NULL);
+    WriteFile(Common_LogFile, ascii, (DWORD)strlen(ascii), &dwBytesWritten, NULL);
+
+    //dwLength = lstrlen(TRACELOG_NEWLINE) * sizeof(TCHAR);
+    //WriteFile(Common_LogFile, TRACELOG_NEWLINE, dwLength, &dwBytesWritten, NULL);
 }
 
 void DebugLogFormat(LPCTSTR pszFormat, ...)

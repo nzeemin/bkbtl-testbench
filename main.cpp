@@ -112,10 +112,12 @@ void Test02_Focal10()
 
 void Test03_Tmos()
 {
-    Test_Init(_T("TEST 3: TMOS tests"), BK_CONF_BK0010_FDD);
+    Test_Init(_T("TEST 3: TMOS tests"), BK_CONF_BK0010_FOCAL);
 
     Emulator_Run(50);
-    //Test_SaveScreenshot(_T("test03_01.bmp"));
+    Emulator_KeyboardSequence("P M\n");
+    Emulator_Run(50);
+    Test_SaveScreenshot(_T("test03_01.bmp"));
     Test_LoadBin(_T("data\\791401.bin"));
     Emulator_AttachTeletypeBuffer();
     Emulator_KeyboardSequence("S1000\n");
@@ -236,7 +238,6 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(0040);  //TODO: AP2? + Space
     Emulator_KeyboardPressRelease(0017);  // LAT
     Test_SaveScreenshot(_T("test04_04_2.bmp"), 1);
-
     Emulator_KeyboardPressRelease(012);  // Enter -- exit the test
 
     // Tape port test
@@ -308,8 +309,11 @@ void Test04_MSTD11()
 
 void Test05_Games10()
 {
-    Test_Init(_T("TEST 5: BK0010 Games"), BK_CONF_BK0010_FDD);
+    Test_Init(_T("TEST 5: BK0010 Games"), BK_CONF_BK0010_BASIC);
 
+    // KLAD
+    Emulator_Run(50);
+    Emulator_KeyboardSequence("MO\n");
     Emulator_Run(50);
     Test_LoadBin(_T("data\\klad.bin"));
     Emulator_KeyboardSequence("S1000\n");
@@ -320,6 +324,23 @@ void Test05_Games10()
     Emulator_KeyboardPressRelease(0061);  // 1
     Emulator_Run(20);
     Test_CheckScreenshot(_T("data\\test05_02.bmp"), 1);
+
+    // BALLY
+    Emulator_Reset();
+    Emulator_Run(50);
+    Emulator_KeyboardSequence("MO\n");
+    Emulator_Run(50);
+    Test_LoadBin(_T("data\\bally.bin"));
+    Emulator_KeyboardSequence("S1000\n");
+    Emulator_Run(100);
+    Emulator_KeyboardPressRelease(012);  // Enter
+    Emulator_Run(100);
+    Test_CheckScreenshot(_T("data\\test05_03.bmp"), 1);
+    Emulator_KeyboardPressRelease(012);  // Enter
+    Emulator_Run(120);
+    Emulator_KeyboardPressRelease(012);  // Enter
+    Emulator_Run(390);
+    Test_CheckScreenshot(_T("data\\test05_04.bmp"), 1);
 
     //TODO
 
@@ -343,11 +364,12 @@ void Test06_RT11()
 int _tmain(int argc, _TCHAR* argv[])
 {
     SYSTEMTIME timeFrom;  ::GetLocalTime(&timeFrom);
+    DebugLogClear();
     Test_LogInfo(_T("Initialization..."));
 
     Test01_Basic10();
     Test02_Focal10();
-    Test03_Tmos();
+    //Test03_Tmos();
     Test04_MSTD11();
     Test05_Games10();
     Test06_RT11();
