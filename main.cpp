@@ -83,6 +83,33 @@ void Test01_Basic10()
     Test_Done();
 }
 
+void Test011_Basic10_Cassette()
+{
+    Test_Init(_T("TEST 11: BASIC BK0010 CASSETTE"), BK_CONF_BK0010_BASIC);
+
+    Emulator_Run(50);
+
+    Emulator_KeyboardSequence("10 PRINT PI\n");
+
+    Emulator_KeyboardSequence("CSAVE \"PI\"\n");
+    Test_CreateTape(_T("temp\\test011_01.wav"));
+    Emulator_Run(25 * 12);
+    Test_CloseTape();
+    Test_SaveScreenshot(_T("data\\test011_01.bmp"));
+
+    Emulator_KeyboardSequence("NEW\n");
+    Emulator_Run(20);
+    Emulator_KeyboardSequence("CLOAD \"PI\"\n");
+    Test_OpenTape(_T("temp\\test011_01.wav"));
+    Emulator_Run(25 * 12);
+    Test_CloseTape();
+    Emulator_KeyboardSequence("LIST\n");
+    Emulator_Run(5);
+    Test_SaveScreenshot(_T("data\\test011_02.bmp"));
+
+    Test_Done();
+}
+
 void Test02_Focal10()
 {
     Test_Init(_T("TEST 2: Focal BK0010"), BK_CONF_BK0010_FOCAL);
@@ -358,6 +385,10 @@ void Test06_RT11()
     Emulator_Run(14 * 25);
     Test_CheckScreenshot(_T("data\\test06_02.bmp"));
 
+    Emulator_KeyboardSequence("SH CONF\n");
+    Emulator_Run(500);
+    Test_CheckScreenshot(_T("data\\test06_03.bmp"));
+
     Test_Done();
 }
 
@@ -368,6 +399,7 @@ int _tmain(int argc, _TCHAR* argv[])
     Test_LogInfo(_T("Initialization..."));
 
     Test01_Basic10();
+    Test011_Basic10_Cassette();
     Test02_Focal10();
     //Test03_Tmos();
     Test04_MSTD11();
