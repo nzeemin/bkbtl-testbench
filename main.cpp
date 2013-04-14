@@ -384,6 +384,10 @@ void Test06_RT11()
     Test_CheckScreenshot(_T("data\\test06_01.bmp"));
     Emulator_Run(14 * 25);
     Test_CheckScreenshot(_T("data\\test06_02.bmp"));
+    Emulator_KeyboardSequence("IC\n");
+    Emulator_Run(34 * 25);
+    Test_CheckScreenshot(_T("data\\test06_03.bmp"));
+    //TODO: Press AP2+1 Help
 
     Emulator_KeyboardSequence("SH CONF\n");
     Emulator_Run(500);
