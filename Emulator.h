@@ -21,6 +21,8 @@ BKBTL. If not, see <http://www.gnu.org/licenses/>. */
 extern CMotherboard* g_pBoard;
 
 extern BOOL g_okEmulatorRunning;
+extern BOOL g_okEmulatorAutoTapeReading;
+extern TCHAR * g_pEmulatorAutoTapeReadingFilename;
 
 
 //////////////////////////////////////////////////////////////////////

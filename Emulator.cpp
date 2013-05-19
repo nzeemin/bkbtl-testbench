@@ -1,12 +1,12 @@
-/*  This file is part of UKNCBTL.
-    UKNCBTL is free software: you can redistribute it and/or modify it under the terms
+/*  This file is part of BKBTL.
+    BKBTL is free software: you can redistribute it and/or modify it under the terms
 of the GNU Lesser General Public License as published by the Free Software Foundation,
 either version 3 of the License, or (at your option) any later version.
-    UKNCBTL is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    BKBTL is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU Lesser General Public License for more details.
     You should have received a copy of the GNU Lesser General Public License along with
-UKNCBTL. If not, see <http://www.gnu.org/licenses/>. */
+BKBTL. If not, see <http://www.gnu.org/licenses/>. */
 
 // Emulator.cpp
 
@@ -29,6 +29,8 @@ BKConfiguration g_nEmulatorConfiguration;  // Current configuration
 
 BOOL g_okEmulatorInitialized = FALSE;
 BOOL g_okEmulatorRunning = FALSE;
+BOOL g_okEmulatorAutoTapeReading = FALSE;
+TCHAR * g_pEmulatorAutoTapeReadingFilename = NULL;
 
 WORD m_wEmulatorCPUBreakpoint = 0177777;
 
@@ -46,22 +48,7 @@ BYTE m_TapeBuffer[TAPE_BUFFER_SIZE];
 BOOL CALLBACK Emulator_TapeReadCallback(UINT samples);
 BOOL CALLBACK Emulator_TapeWriteCallback(UINT samples);
 
-
-//////////////////////////////////////////////////////////////////////
-
-
-const LPCTSTR FILENAME_BKROM_MONIT10    = _T("monit10.rom");
-const LPCTSTR FILENAME_BKROM_FOCAL      = _T("focal.rom");
-const LPCTSTR FILENAME_BKROM_TESTS      = _T("tests.rom");
-const LPCTSTR FILENAME_BKROM_BASIC10_1  = _T("basic10_1.rom");
-const LPCTSTR FILENAME_BKROM_BASIC10_2  = _T("basic10_2.rom");
-const LPCTSTR FILENAME_BKROM_BASIC10_3  = _T("basic10_3.rom");
-const LPCTSTR FILENAME_BKROM_DISK_326   = _T("disk_326.rom");
-const LPCTSTR FILENAME_BKROM_BK11M_BOS  = _T("b11m_bos.rom");
-const LPCTSTR FILENAME_BKROM_BK11M_EXT  = _T("b11m_ext.rom");
-const LPCTSTR FILENAME_BKROM_BASIC11M_0 = _T("basic11m_0.rom");
-const LPCTSTR FILENAME_BKROM_BASIC11M_1 = _T("basic11m_1.rom");
-const LPCTSTR FILENAME_BKROM_BK11M_MSTD = _T("b11m_mstd.rom");
+void Emulator_FakeTape_StartReadFile();
 
 
 //////////////////////////////////////////////////////////////////////
@@ -85,20 +72,44 @@ struct ScreenModeStruct
     int height;
     PREPARE_SCREEN_CALLBACK callback;
 }
-static ScreenModeReference[] = {
+static ScreenModeReference[] =
+{
     { 512, 256, Emulator_PrepareScreenBW512x256 },
     { 512, 256, Emulator_PrepareScreenColor512x256 },
 };
 
-const DWORD ScreenView_BWPalette[4] = {
+//////////////////////////////////////////////////////////////////////
+
+
+const LPCTSTR FILENAME_BKROM_MONIT10    = _T("monit10.rom");
+const LPCTSTR FILENAME_BKROM_FOCAL      = _T("focal.rom");
+const LPCTSTR FILENAME_BKROM_TESTS      = _T("tests.rom");
+const LPCTSTR FILENAME_BKROM_BASIC10_1  = _T("basic10_1.rom");
+const LPCTSTR FILENAME_BKROM_BASIC10_2  = _T("basic10_2.rom");
+const LPCTSTR FILENAME_BKROM_BASIC10_3  = _T("basic10_3.rom");
+const LPCTSTR FILENAME_BKROM_DISK_326   = _T("disk_326.rom");
+const LPCTSTR FILENAME_BKROM_BK11M_BOS  = _T("b11m_bos.rom");
+const LPCTSTR FILENAME_BKROM_BK11M_EXT  = _T("b11m_ext.rom");
+const LPCTSTR FILENAME_BKROM_BASIC11M_0 = _T("basic11m_0.rom");
+const LPCTSTR FILENAME_BKROM_BASIC11M_1 = _T("basic11m_1.rom");
+const LPCTSTR FILENAME_BKROM_BK11M_MSTD = _T("b11m_mstd.rom");
+
+
+//////////////////////////////////////////////////////////////////////
+// Colors
+
+const DWORD ScreenView_BWPalette[4] =
+{
     0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF
 };
 
-const DWORD ScreenView_ColorPalette[4] = {
+const DWORD ScreenView_ColorPalette[4] =
+{
     0x000000, 0x0000FF, 0x00FF00, 0xFF0000
 };
 
-const DWORD ScreenView_ColorPalettes[16][4] = {
+const DWORD ScreenView_ColorPalettes[16][4] =
+{
     //                                     Palette#     01           10          11
     0x000000, 0x0000FF, 0x00FF00, 0xFF0000,  // 00    синий   |   зеленый  |  красный
     0x000000, 0xFFFF00, 0xFF00FF, 0xFF0000,  // 01   желтый   |  сиреневый |  красный
@@ -114,13 +125,12 @@ const DWORD ScreenView_ColorPalettes[16][4] = {
     0x000000, 0x00FFFF, 0xFFFF00, 0xFF0000,  // 11   голубой  |   желтый   |  красный
     0x000000, 0xFF0000, 0x00FF00, 0x00FFFF,  // 12   красный  |   зеленый  |  голубой
     0x000000, 0x00FFFF, 0xFFFF00, 0xFFFFFF,  // 13   голубой  |   желтый   |   белый
-    0x000000, 0xFFFF00, 0x00FF00, 0xFFFFFF,  // 14   желтый   |   зеленый  |   белый 
+    0x000000, 0xFFFF00, 0x00FF00, 0xFFFFFF,  // 14   желтый   |   зеленый  |   белый
     0x000000, 0x00FFFF, 0x00FF00, 0xFFFFFF,  // 15   голубой  |   зеленый  |   белый
 };
 
 
 //////////////////////////////////////////////////////////////////////
-
 
 BOOL Emulator_LoadRomFile(LPCTSTR strFileName, BYTE* buffer, DWORD fileOffset, DWORD bytesToRead)
 {
@@ -158,8 +168,21 @@ BOOL Emulator_Init()
 
     g_pBoard->Reset();
 
+    g_okEmulatorAutoTapeReading = FALSE;
+    g_pEmulatorAutoTapeReadingFilename = NULL;
+
     g_okEmulatorInitialized = TRUE;
     return TRUE;
+}
+
+void Emulator_Done()
+{
+    ASSERT(g_pBoard != NULL);
+
+    CProcessor::Done();
+
+    delete g_pBoard;
+    g_pBoard = NULL;
 }
 
 BOOL Emulator_InitConfiguration(BKConfiguration configuration)
@@ -314,16 +337,6 @@ BOOL Emulator_InitConfiguration(BKConfiguration configuration)
     return TRUE;
 }
 
-void Emulator_Done()
-{
-    ASSERT(g_pBoard != NULL);
-
-    CProcessor::Done();
-
-    delete g_pBoard;
-    g_pBoard = NULL;
-}
-
 void Emulator_Start()
 {
     g_okEmulatorRunning = TRUE;
@@ -345,12 +358,16 @@ void Emulator_Reset()
 
     m_nUptimeFrameCount = 0;
     m_dwEmulatorUptime = 0;
+
+    g_okEmulatorAutoTapeReading = FALSE;
+    g_pEmulatorAutoTapeReadingFilename = NULL;
 }
 
 void Emulator_SetCPUBreakpoint(WORD address)
 {
     m_wEmulatorCPUBreakpoint = address;
 }
+
 BOOL Emulator_IsBreakpoint()
 {
     WORD wCPUAddr = g_pBoard->GetCPU()->GetPC();
@@ -373,7 +390,133 @@ int Emulator_SystemFrame()
         m_nUptimeFrameCount = 0;
     }
 
+    if (g_okEmulatorAutoTapeReading)
+    {
+        WORD pc = g_pBoard->GetCPU()->GetPC();
+        // Check if BK-0010 and PC=116722,116724 for tape reading
+        if ((g_nEmulatorConfiguration & 1) == BK_COPT_BK0010 &&
+            (pc == 0116722 || pc == 0116724))
+        {
+            Emulator_FakeTape_StartReadFile();
+        }
+    }
+
     return 1;
+}
+
+void Emulator_FakeTape_StartReadFile()
+{
+    // Retrieve EMT 36 file name
+    TCHAR filename[24];
+    WORD nameaddr = 0326; //g_pBoard->GetRAMWord(0306) + 6;
+    for (int i = 0; i < 16; i++)
+    {
+        BYTE ch = g_pBoard->GetRAMByte(nameaddr + i);
+        filename[i] = (ch < 32) ? 0 : Translate_BK_Unicode(ch);
+    }
+    filename[16] = 0;
+    // Trim trailing spaces
+    for (int i = 15; i >= 0 && filename[i] == _T(' '); i--)
+        filename[i] = 0;
+    TCHAR* pdot = NULL;
+    if (*filename != 0)
+    {
+        // Check if we have filename extension
+        pdot = _tcsrchr(filename, _T('.'));
+        if (pdot == NULL)  // Have no dot so append default '.BIN' extension
+            _tcsncat(filename, _T(".BIN"), 4);
+        else
+        {
+            // We have dot in string so cut off spaces before the dot
+            if (pdot != filename)
+            {
+                TCHAR* pspace = pdot;
+                while (pspace > filename && *(pspace - 1) == _T(' '))
+                    pspace--;
+                if (pspace < pdot)
+                    _tcscpy(pspace, pdot);
+            }
+        }
+    }
+
+    FILE* fpFile = NULL;
+    TCHAR filepath[MAX_PATH];
+    *filepath = 0;
+    // First, if the filename specified, try to find it
+    if (g_pEmulatorAutoTapeReadingFilename != NULL)
+        _tcscpy(filepath, g_pEmulatorAutoTapeReadingFilename);
+    else if (*filename != 0)
+        _sntprintf(filepath, 36, _T("data\\%s"), filename);
+    if (*filepath != 0)
+        fpFile = ::_tfsopen(filepath, _T("rb"), _SH_DENYWR);
+    // If file not found then report
+    if (fpFile == NULL)
+    {
+        Test_LogFormat('E', _T("Tape reading failed, file \'%s\' not found."), filepath);
+    }
+
+    BYTE result = 2;  // EMT36 result = checksum error
+    BYTE* pData = NULL;
+    if (fpFile != NULL)
+    {
+        for (;;)  // For breaks only
+        {
+            // Read the file header
+            WORD header[2];
+            if (::fread(header, 1, 4, fpFile) != 4)
+            {
+                Test_LogFormat('E', _T("Tape reading error, file %s"), filepath);
+                break;  // Reading error
+            }
+            WORD filestart = header[0];
+            WORD filesize = header[1];
+
+            g_pBoard->SetRAMWord(0350, filesize);
+            g_pBoard->SetRAMWord(0346, filestart);
+            //TODO: Copy 16-char file name from 0326..0345 to 0352..0371
+
+            if (filesize == 0)
+            {
+                Test_LogFormat('E', _T("Tape reading error, wrong file size %s"), filepath);
+                break;  // Wrong Length
+            }
+
+            // Read the file
+            pData = (BYTE*)malloc(filesize);
+            if (::fread(pData, 1, filesize, fpFile) != filesize)
+            {
+                Test_LogFormat('E', _T("Tape reading error, file %s"), filepath);
+                break;  // Reading error
+            }
+
+            // Copy to memory
+            WORD start = g_pBoard->GetRAMWord(0322);
+            if (start == 0)
+                start = filestart;
+            for (int i = 0; i < filesize; i++)
+            {
+                g_pBoard->SetRAMByte(start + i, pData[i]);
+            }
+
+            result = 0;  // EMT36 result = OK
+            Test_LogFormat('i', _T("Tape reading: loaded file %s"), filepath);
+            break;
+        }
+    }
+
+    if (pData != NULL)
+        free(pData);
+
+    // Report EMT36 result
+    g_pBoard->SetRAMByte(0321, result);
+
+    // Execute RTS twice -- return from EMT36
+    CProcessor* pCPU = g_pBoard->GetCPU();
+    pCPU->SetPC(g_pBoard->GetRAMWord(pCPU->GetSP()));
+    pCPU->SetSP(pCPU->GetSP() + 2);
+    pCPU->SetPC(g_pBoard->GetRAMWord(pCPU->GetSP()));
+    pCPU->SetSP(pCPU->GetSP() + 2);
+    //TODO: Set flags
 }
 
 BOOL Emulator_AttachFloppyImage(int slot, LPCTSTR sFilePath)
@@ -452,6 +595,80 @@ void Emulator_CloseTape()
 	m_hTapeWavPcmFile = (HWAVPCMFILE) INVALID_HANDLE_VALUE;
 }
 
+
+//////////////////////////////////////////////////////////////////////
+
+void CALLBACK Emulator_TeletypeCallback(BYTE symbol)
+{
+    if (m_pEmulatorTeletypeBuffer == NULL)
+        return;
+    if (m_nEmulatorTeletypeBufferIndex >= m_nEmulatorTeletypeBufferSize)
+        return;
+
+    m_pEmulatorTeletypeBuffer[m_nEmulatorTeletypeBufferIndex] = symbol;
+    m_nEmulatorTeletypeBufferIndex++;
+    m_pEmulatorTeletypeBuffer[m_nEmulatorTeletypeBufferIndex] = 0;
+}
+
+const char * Emulator_GetTeletypeBuffer()
+{
+    return m_pEmulatorTeletypeBuffer;
+}
+void Emulator_AttachTeletypeBuffer(int bufferSize)
+{
+    ASSERT(bufferSize > 0);
+
+    m_pEmulatorTeletypeBuffer = (char *) ::malloc(bufferSize + 1);
+    m_nEmulatorTeletypeBufferIndex = 0;
+    m_nEmulatorTeletypeBufferSize = bufferSize;
+    m_pEmulatorTeletypeBuffer[0] = 0;
+
+    g_pBoard->SetTeletypeCallback(Emulator_TeletypeCallback);
+}
+void Emulator_DetachTeletypeBuffer()
+{
+    g_pBoard->SetTeletypeCallback(NULL);
+
+    if (m_pEmulatorTeletypeBuffer != NULL)
+    {
+        ::free(m_pEmulatorTeletypeBuffer);
+        m_pEmulatorTeletypeBuffer = NULL;
+    }
+}
+
+
+//////////////////////////////////////////////////////////////////////
+
+const DWORD * Emulator_GetPalette(int screenMode)
+{
+    if ((screenMode & 1) == 0)
+        return (const DWORD *)ScreenView_BWPalette;
+    if ((g_nEmulatorConfiguration & BK_COPT_BK0011) == 0)
+        return (const DWORD *)ScreenView_ColorPalette;
+    else
+        return (const DWORD *)ScreenView_ColorPalettes[g_pBoard->GetPalette()];
+}
+
+void Emulator_PrepareScreenRGB32(void* pImageBits, int screenMode)
+{
+    if (pImageBits == NULL) return;
+
+    // Get scroll value
+    WORD scroll = g_pBoard->GetPortView(0177664);
+    BOOL okSmallScreen = ((scroll & 01000) == 0);
+    scroll &= 0377;
+    scroll = (scroll >= 0330) ? scroll - 0330 : 050 + scroll;
+
+    const DWORD * pPalette = Emulator_GetPalette(screenMode);
+
+    const BYTE* pVideoBuffer = g_pBoard->GetVideoBuffer();
+    ASSERT(pVideoBuffer != NULL);
+
+    // Render to bitmap
+    PREPARE_SCREEN_CALLBACK callback = ScreenModeReference[screenMode].callback;
+    callback(pVideoBuffer, okSmallScreen, pPalette, scroll, pImageBits);
+}
+
 void CALLBACK Emulator_PrepareScreenBW512x256(const BYTE* pVideoBuffer, int okSmallScreen, const DWORD* pPalette, int scroll, void* pImageBits)
 {
     int linesToShow = okSmallScreen ? 64 : 256;
@@ -512,38 +729,8 @@ void CALLBACK Emulator_PrepareScreenColor512x256(const BYTE* pVideoBuffer, int o
     }
 }
 
-const DWORD * Emulator_GetPalette(int screenMode)
-{
-    const DWORD * pPalette = ScreenView_BWPalette;
-    if ((screenMode & 1) != 0)
-    {
-        if ((g_nEmulatorConfiguration & BK_COPT_BK0011) == 0)
-            pPalette = (DWORD*)ScreenView_ColorPalette;
-        else
-            pPalette = (DWORD*)ScreenView_ColorPalettes[g_pBoard->GetPalette()];
-    }
-    return pPalette;
-}
 
-void Emulator_PrepareScreenRGB32(void* pImageBits, int screenMode)
-{
-    if (pImageBits == NULL) return;
-
-    // Get scroll value
-    WORD scroll = g_pBoard->GetPortView(0177664);
-    BOOL okSmallScreen = ((scroll & 01000) == 0);
-    scroll &= 0377;
-    scroll = (scroll >= 0330) ? scroll - 0330 : 050 + scroll;
-
-    const DWORD * pPalette = Emulator_GetPalette(screenMode);
-
-    const BYTE* pVideoBuffer = g_pBoard->GetVideoBuffer();
-    ASSERT(pVideoBuffer != NULL);
-
-    // Render to bitmap
-    PREPARE_SCREEN_CALLBACK callback = ScreenModeReference[screenMode].callback;
-    callback(pVideoBuffer, okSmallScreen, pPalette, scroll, pImageBits);
-}
+//////////////////////////////////////////////////////////////////////
 
 DWORD Emulator_GetUptime()
 {
@@ -872,44 +1059,6 @@ BOOL Emulator_LoadBin(LPCTSTR strFileName)
     ::CloseHandle(hFile);
 
     return TRUE;
-}
-
-void CALLBACK Emulator_TeletypeCallback(BYTE symbol)
-{
-    if (m_pEmulatorTeletypeBuffer == NULL)
-        return;
-    if (m_nEmulatorTeletypeBufferIndex >= m_nEmulatorTeletypeBufferSize)
-        return;
-
-    m_pEmulatorTeletypeBuffer[m_nEmulatorTeletypeBufferIndex] = symbol;
-    m_nEmulatorTeletypeBufferIndex++;
-    m_pEmulatorTeletypeBuffer[m_nEmulatorTeletypeBufferIndex] = 0;
-}
-
-const char * Emulator_GetTeletypeBuffer()
-{
-    return m_pEmulatorTeletypeBuffer;
-}
-void Emulator_AttachTeletypeBuffer(int bufferSize)
-{
-    ASSERT(bufferSize > 0);
-
-    m_pEmulatorTeletypeBuffer = (char *) ::malloc(bufferSize + 1);
-    m_nEmulatorTeletypeBufferIndex = 0;
-    m_nEmulatorTeletypeBufferSize = bufferSize;
-    m_pEmulatorTeletypeBuffer[0] = 0;
-
-    g_pBoard->SetTeletypeCallback(Emulator_TeletypeCallback);
-}
-void Emulator_DetachTeletypeBuffer()
-{
-    g_pBoard->SetTeletypeCallback(NULL);
-
-    if (m_pEmulatorTeletypeBuffer != NULL)
-    {
-        ::free(m_pEmulatorTeletypeBuffer);
-        m_pEmulatorTeletypeBuffer = NULL;
-    }
 }
 
 

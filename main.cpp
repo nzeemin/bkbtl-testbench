@@ -78,6 +78,25 @@ void Test01_Basic10()
     Emulator_Run(10950);
     Test_CheckScreenshot(_T("data\\test01_06.bmp"), 1);
 
+    // Run infinite loop and press STOP key
+    Emulator_Reset();
+    Emulator_Run(50);
+    Emulator_KeyboardSequence("10 GOTO 10\n");
+    Emulator_KeyboardSequence("RUN\n");
+    Emulator_Run(100);
+    Emulator_KeyboardPressRelease(BK_KEY_STOP);
+    Test_CheckScreenshot(_T("data\\test01_07.bmp"));
+
+    // Load and run COOL.COD program
+    Emulator_Reset();
+    Emulator_Run(50);
+    g_okEmulatorAutoTapeReading = TRUE;
+    Emulator_KeyboardSequence("CLOAD \"COOL\"\n");
+    Emulator_Run(5);
+    Emulator_KeyboardSequence("RUN\n");
+    Emulator_Run(100);
+    Test_CheckScreenshot(_T("data\\test01_08.bmp"), 1);
+
     //Test_SaveScreenshotSeria(_T("video\\test01_%04u.bmp"), 20, 10);
 
     Test_Done();
@@ -116,7 +135,6 @@ void Test02_Focal10()
 
     Emulator_Run(50);
     Emulator_KeyboardSequence("V\n");
-
     Test_CheckScreenshot(_T("data\\test02_01.bmp"));
 
     //// BASIC speed test by Sergey Frolov, see http://www.leningrad.su/calc/speed.php
@@ -133,6 +151,25 @@ void Test02_Focal10()
     //Emulator_Run(200);
     //Test_SaveScreenshot(_T("test02_02.bmp"));
     ////NOTE: Программа вылетает с ошибкой переполнения при J=26 -- видимо, не хватает точности
+
+    // PREZIDENT.FOC
+    Emulator_Reset();
+    Emulator_Run(50);
+    g_okEmulatorAutoTapeReading = TRUE;
+    g_pEmulatorAutoTapeReadingFilename = _T("data\\PREZIDENT.FOC");
+    Emulator_KeyboardSequence("L G PREZIDENT\n");
+    Emulator_Run(50);
+    Emulator_KeyboardSequence("GO\n");  // Run the program
+    Emulator_Run(50);
+    Test_CheckScreenshot(_T("data\\test02_03.bmp"));
+    Emulator_KeyboardSequence("1\n");
+    Emulator_Run(175);
+    Test_CheckScreenshot(_T("data\\test02_04.bmp"));
+    Emulator_KeyboardSequence("30\n");
+    Emulator_Run(25);
+    Emulator_KeyboardSequence("10000\n");
+    Emulator_Run(125);
+    Test_CheckScreenshot(_T("data\\test02_05.bmp"));
 
     Test_Done();
 }
@@ -355,9 +392,11 @@ void Test05_Games10()
     // BALLY
     Emulator_Reset();
     Emulator_Run(50);
+    g_okEmulatorAutoTapeReading = TRUE;
     Emulator_KeyboardSequence("MO\n");
+    Emulator_Run(5);
+    Emulator_KeyboardSequence("M\nBALLY\n");
     Emulator_Run(50);
-    Test_LoadBin(_T("data\\bally.bin"));
     Emulator_KeyboardSequence("S1000\n");
     Emulator_Run(100);
     Emulator_KeyboardPressRelease(012);  // Enter
@@ -368,6 +407,24 @@ void Test05_Games10()
     Emulator_KeyboardPressRelease(012);  // Enter
     Emulator_Run(390);
     Test_CheckScreenshot(_T("data\\test05_04.bmp"), 1);
+
+    // Kings Valley
+    Emulator_Reset();
+    Emulator_Run(50);
+    g_okEmulatorAutoTapeReading = TRUE;
+    Emulator_KeyboardSequence("MO\n");
+    Emulator_Run(5);
+    Emulator_KeyboardSequence("M\nVALLEY\n");
+    Emulator_Run(50);
+    Test_CheckScreenshot(_T("data\\test05_05.bmp"), 1);
+    Emulator_KeyboardPressRelease(012);  // Enter
+    Emulator_Run(50);
+    Test_CheckScreenshot(_T("data\\test05_06.bmp"), 1);
+    Emulator_KeyboardPressRelease(012);  // Enter
+    Emulator_Run(100);
+    Emulator_KeyboardPressRelease(012,10);  // Enter
+    Emulator_Run(50);
+    Test_CheckScreenshot(_T("data\\test05_07.bmp"), 1);
 
     //TODO
 

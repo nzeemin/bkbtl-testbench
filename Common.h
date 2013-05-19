@@ -61,6 +61,7 @@ const int BK_SCREEN_WIDTH = 640;
 const int BK_SCREEN_HEIGHT = 288;
 
 void PrintOctalValue(TCHAR* buffer, WORD value);
+TCHAR Translate_BK_Unicode(BYTE ch);
 
 
 //////////////////////////////////////////////////////////////////////
