@@ -247,6 +247,11 @@ void Test_LogSummary()
     Test_LogFormat(evtype, _T("TOTAL tests started: %u, failed: %u"), m_nCommon_TestsStarted, m_nCommon_TestsFailed);
 }
 
+void Test_AssertFailedLine(LPCSTR lpszFileName, int nLine)
+{
+    Test_LogFormat('E', _T("Test assertion failed: File: %S Line: %d"), lpszFileName, nLine);
+}
+
 void Test_AttachFloppyImage(int slot, LPCTSTR sFilePath)
 {
     BOOL res = Emulator_AttachFloppyImage(slot, sFilePath);

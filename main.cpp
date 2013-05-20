@@ -12,6 +12,7 @@ BKBTL. If not, see <http://www.gnu.org/licenses/>. */
 
 #include "stdafx.h"
 #include "Emulator.h"
+#include "emubase\\Emubase.h"
 
 
 void Test01_Basic10()
@@ -194,6 +195,41 @@ void Test03_Tmos()
         Test_LogError(_T("Teletype check FAILED"));
     Emulator_DetachTeletypeBuffer();
     //Test_SaveScreenshot(_T("test03_03.bmp"));
+
+    Test_Done();
+}
+
+void Test031_Tricks()
+{
+    Test_Init(_T("TEST 31: Tricks"), BK_CONF_BK0010_BASIC);
+
+    // Double loop using INC PC, see http://zx.pk.ru/showpost.php?p=283480&postcount=29
+    Emulator_Run(50);
+    Emulator_KeyboardSequence("P M\n");
+    g_pBoard->SetRAMWord(001010, 000240);  // 001010: 0240    NOP
+    g_pBoard->SetRAMWord(001012, 000240);  // 001012: 0240    NOP
+    g_pBoard->SetRAMWord(001014, 000240);  // 001014: 0240    NOP
+    g_pBoard->SetRAMWord(001016, 000240);  // 001016: 0240    NOP
+    g_pBoard->SetRAMWord(001020, 005207);  // 001020: 005207  INC PC
+    g_pBoard->SetRAMWord(001022, 000772);  // 001022: 000772  BR  1010
+    g_pBoard->SetRAMWord(001024, 000240);  // 001024: 0240    NOP
+    g_pBoard->GetCPU()->SetPC(001020);
+    g_pBoard->DebugTicks();  // INC PC
+    Test_Assert(01023 == g_pBoard->GetCPU()->GetPC());
+    g_pBoard->DebugTicks();  // BR 1010
+    Test_Assert(01011 == g_pBoard->GetCPU()->GetPC());
+    g_pBoard->DebugTicks();  // NOP
+    Test_Assert(01013 == g_pBoard->GetCPU()->GetPC());
+    g_pBoard->DebugTicks();  // NOP
+    Test_Assert(01015 == g_pBoard->GetCPU()->GetPC());
+    g_pBoard->DebugTicks();  // NOP
+    Test_Assert(01017 == g_pBoard->GetCPU()->GetPC());
+    g_pBoard->DebugTicks();  // NOP
+    Test_Assert(01021 == g_pBoard->GetCPU()->GetPC());
+    g_pBoard->DebugTicks();  // INC PC
+    Test_Assert(01024 == g_pBoard->GetCPU()->GetPC());
+    g_pBoard->DebugTicks();  // NOP
+    Test_Assert(01026 == g_pBoard->GetCPU()->GetPC());
 
     Test_Done();
 }
@@ -464,6 +500,7 @@ int _tmain(int argc, _TCHAR* argv[])
     Test011_Basic10_Cassette();
     Test02_Focal10();
     //Test03_Tmos();
+    Test031_Tricks();
     Test04_MSTD11();
     Test05_Games10();
     Test06_RT11();

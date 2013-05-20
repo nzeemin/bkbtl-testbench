@@ -71,6 +71,9 @@ void Test_Log(char eventtype, LPCTSTR message);
 void Test_LogFormat(char eventtype, LPCTSTR format, ...);
 inline void Test_LogInfo(LPCTSTR message) { Test_Log('i', message); }
 inline void Test_LogError(LPCTSTR message) { Test_Log('E', message); }
+void Test_AssertFailedLine(LPCSTR lpszFileName, int nLine);
+
+#define Test_Assert(f)  { if (!(f)) Test_AssertFailedLine(__FILE__, __LINE__); }
 
 void Test_Init(LPCTSTR sTestTitle, int configuration);
 void Test_Done();
