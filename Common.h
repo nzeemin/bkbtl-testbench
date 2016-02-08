@@ -18,7 +18,7 @@ BKBTL. If not, see <http://www.gnu.org/licenses/>. */
 
 #ifdef _DEBUG
 
-BOOL AssertFailedLine(LPCSTR lpszFileName, int nLine);
+bool AssertFailedLine(LPCSTR lpszFileName, int nLine);
 #define ASSERT(f)          (void) ((f) || !AssertFailedLine(__FILE__, __LINE__) || (DebugBreak(), 0))
 #define VERIFY(f)          ASSERT(f)
 

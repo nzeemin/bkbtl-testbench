@@ -16,7 +16,7 @@ BKBTL. If not, see <http://www.gnu.org/licenses/>. */
 
 //////////////////////////////////////////////////////////////////////
 
-DWORD m_dwTotalEmulatorUptime = 0;  // Total BK uptime, seconds
+uint32_t m_dwTotalEmulatorUptime = 0;  // Total BK uptime, seconds
 int m_nCommon_TestsStarted = 0;
 bool m_okCommon_CurrentTestFailed = false;
 int m_nCommon_TestsFailed = 0;
@@ -24,7 +24,7 @@ int m_nCommon_TestsFailed = 0;
 
 //////////////////////////////////////////////////////////////////////
 
-BOOL AssertFailedLine(LPCSTR lpszFileName, int nLine)
+bool AssertFailedLine(LPCSTR lpszFileName, int nLine)
 {
     //TODO: Implement in this environment
 
@@ -90,14 +90,14 @@ void DebugLog(LPCTSTR message)
     }
     SetFilePointer(Common_LogFile, 0, NULL, FILE_END);
 
-    DWORD dwLength = lstrlen(message) * sizeof(TCHAR);
+    uint32_t dwLength = lstrlen(message) * sizeof(TCHAR);
 
     char ascii[256];  *ascii = 0;
     WideCharToMultiByte(CP_ACP, 0, message, dwLength, ascii, 256, NULL, NULL);
 
     DWORD dwBytesWritten = 0;
     //WriteFile(Common_LogFile, message, dwLength, &dwBytesWritten, NULL);
-    WriteFile(Common_LogFile, ascii, (DWORD)strlen(ascii), &dwBytesWritten, NULL);
+    WriteFile(Common_LogFile, ascii, (uint32_t)strlen(ascii), &dwBytesWritten, NULL);
 
     //dwLength = lstrlen(TRACELOG_NEWLINE) * sizeof(TCHAR);
     //WriteFile(Common_LogFile, TRACELOG_NEWLINE, dwLength, &dwBytesWritten, NULL);
@@ -254,20 +254,20 @@ void Test_AssertFailedLine(LPCSTR lpszFileName, int nLine)
 
 void Test_AttachFloppyImage(int slot, LPCTSTR sFilePath)
 {
-    BOOL res = Emulator_AttachFloppyImage(slot, sFilePath);
+    bool res = Emulator_AttachFloppyImage(slot, sFilePath);
     if (!res)
         Test_LogFormat('E', _T("FAILED to attach floppy image %s"), sFilePath);
 }
 
 void Test_OpenTape(LPCTSTR sFilePath)
 {
-    BOOL res = Emulator_OpenTape(sFilePath);
+    bool res = Emulator_OpenTape(sFilePath);
     if (!res)
         Test_LogFormat('E', _T("FAILED to open tape image %s"), sFilePath);
 }
 void Test_CreateTape(LPCTSTR sFilePath)
 {
-    BOOL res = Emulator_CreateTape(sFilePath);
+    bool res = Emulator_CreateTape(sFilePath);
     if (!res)
         Test_LogFormat('E', _T("FAILED to create tape image %s"), sFilePath);
 }

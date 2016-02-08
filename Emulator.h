@@ -20,41 +20,41 @@ BKBTL. If not, see <http://www.gnu.org/licenses/>. */
 
 extern CMotherboard* g_pBoard;
 
-extern BOOL g_okEmulatorRunning;
-extern BOOL g_okEmulatorAutoTapeReading;
+extern bool g_okEmulatorRunning;
+extern bool g_okEmulatorAutoTapeReading;
 extern TCHAR * g_pEmulatorAutoTapeReadingFilename;
 
 
 //////////////////////////////////////////////////////////////////////
 
 
-BOOL Emulator_Init();
-BOOL Emulator_InitConfiguration(BKConfiguration configuration);
+bool Emulator_Init();
+bool Emulator_InitConfiguration(BKConfiguration configuration);
 void Emulator_Done();
 void Emulator_SetCPUBreakpoint(WORD address);
-BOOL Emulator_IsBreakpoint();
+bool Emulator_IsBreakpoint();
 void Emulator_Start();
 void Emulator_Stop();
 void Emulator_Reset();
 int  Emulator_SystemFrame();
-DWORD Emulator_GetUptime();  // BK uptime, in seconds
+uint32_t Emulator_GetUptime();  // BK uptime, in seconds
 
-BOOL Emulator_AttachFloppyImage(int slot, LPCTSTR sFilePath);
+bool Emulator_AttachFloppyImage(int slot, LPCTSTR sFilePath);
 
-BOOL Emulator_OpenTape(LPCTSTR sFilePath);
-BOOL Emulator_CreateTape(LPCTSTR sFilePath);
+bool Emulator_OpenTape(LPCTSTR sFilePath);
+bool Emulator_CreateTape(LPCTSTR sFilePath);
 void Emulator_CloseTape();
 
-BOOL Emulator_Run(int frames);
-BOOL Emulator_SaveScreenshot(LPCTSTR sFileName, int screenMode);
+bool Emulator_Run(int frames);
+bool Emulator_SaveScreenshot(LPCTSTR sFileName, int screenMode);
 int  Emulator_CheckScreenshot(LPCTSTR sFileName, int screenMode);
 
-void Emulator_KeyboardEvent(BYTE bkscan, BOOL okPressed);
+void Emulator_KeyboardEvent(BYTE bkscan, bool okPressed);
 void Emulator_KeyboardPressRelease(BYTE bkscan, int timeout = 3);
 void Emulator_KeyboardPressReleaseChar(char ch, int timeout = 3);
 void Emulator_KeyboardSequence(const char * str);
 
-BOOL Emulator_LoadBin(LPCTSTR strFileName);
+bool Emulator_LoadBin(LPCTSTR strFileName);
 
 void Emulator_AttachTeletypeBuffer(int bufferSize = 1024);
 void Emulator_DetachTeletypeBuffer();

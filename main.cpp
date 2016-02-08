@@ -91,7 +91,7 @@ void Test01_Basic10()
     // Load and run COOL.COD program
     Emulator_Reset();
     Emulator_Run(50);
-    g_okEmulatorAutoTapeReading = TRUE;
+    g_okEmulatorAutoTapeReading = true;
     Emulator_KeyboardSequence("CLOAD \"COOL\"\n");
     Emulator_Run(5);
     Emulator_KeyboardSequence("RUN\n");
@@ -156,7 +156,7 @@ void Test02_Focal10()
     // PREZIDENT.FOC
     Emulator_Reset();
     Emulator_Run(50);
-    g_okEmulatorAutoTapeReading = TRUE;
+    g_okEmulatorAutoTapeReading = true;
     g_pEmulatorAutoTapeReadingFilename = _T("data\\PREZIDENT.FOC");
     Emulator_KeyboardSequence("L G PREZIDENT\n");
     Emulator_Run(50);
@@ -238,9 +238,9 @@ void Test04_MSTD11()
 {
     Test_Init(_T("TEST 4: BK0011M MSTD"), BK_CONF_BK0011);
 
-    Emulator_KeyboardEvent(0040, TRUE);  // Hold Spacebar to boot to monitor
+    Emulator_KeyboardEvent(0040, true);  // Hold Spacebar to boot to monitor
     Emulator_Run(75);
-    Emulator_KeyboardEvent(0040, FALSE);
+    Emulator_KeyboardEvent(0040, false);
     Emulator_KeyboardSequence("160100G");
     Emulator_Run(50);
     Test_CheckScreenshot(_T("data\\test04_01.bmp"), 1);  // Menu
@@ -277,7 +277,7 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(0220);  // STEP
     Emulator_KeyboardPressRelease(0014);  // SBR
     Emulator_KeyboardPressRelease(BK_KEY_STOP);
-    //Emulator_KeyboardEvent(BK_KEY_BACKSHIFT, TRUE);
+    //Emulator_KeyboardEvent(BK_KEY_BACKSHIFT, true);
     Emulator_KeyboardPressRelease(0073);  // ; +  //TODO: with BackShift
     Emulator_KeyboardPressRelease(0061);  // 1
     Emulator_KeyboardPressRelease(0062);
@@ -320,7 +320,7 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(0134);  // Ý Backslash
     Emulator_KeyboardPressRelease(0076);  // . >  //TODO
     Emulator_KeyboardPressRelease(0012);  // ENTER
-    //Emulator_KeyboardEvent(BK_KEY_LOWER, TRUE);
+    //Emulator_KeyboardEvent(BK_KEY_LOWER, true);
     Emulator_KeyboardPressRelease(0121);  // ß Q  //TODO: with ???
     Emulator_KeyboardPressRelease(0136);  // × ^  //TODO
     Emulator_KeyboardPressRelease(0123);  // Ñ S  //TODO
@@ -428,7 +428,7 @@ void Test05_Games10()
     // BALLY
     Emulator_Reset();
     Emulator_Run(50);
-    g_okEmulatorAutoTapeReading = TRUE;
+    g_okEmulatorAutoTapeReading = true;
     Emulator_KeyboardSequence("MO\n");
     Emulator_Run(5);
     Emulator_KeyboardSequence("M\nBALLY\n");
@@ -447,7 +447,7 @@ void Test05_Games10()
     // Kings Valley
     Emulator_Reset();
     Emulator_Run(50);
-    g_okEmulatorAutoTapeReading = TRUE;
+    g_okEmulatorAutoTapeReading = true;
     Emulator_KeyboardSequence("MO\n");
     Emulator_Run(5);
     Emulator_KeyboardSequence("M\nVALLEY\n");
