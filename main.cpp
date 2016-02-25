@@ -458,7 +458,7 @@ void Test05_Games10()
     Test_CheckScreenshot(_T("data\\test05_06.bmp"), 1);
     Emulator_KeyboardPressRelease(012);  // Enter
     Emulator_Run(100);
-    Emulator_KeyboardPressRelease(012,10);  // Enter
+    Emulator_KeyboardPressRelease(012, 10); // Enter
     Emulator_Run(50);
     Test_CheckScreenshot(_T("data\\test05_07.bmp"), 1);
 

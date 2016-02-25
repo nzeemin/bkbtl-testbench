@@ -57,8 +57,8 @@ void DebugLogFormat(LPCTSTR pszFormat, ...);
 // Processor register names
 const TCHAR* REGISTER_NAME[];
 
-const int BK_SCREEN_WIDTH = 640;
-const int BK_SCREEN_HEIGHT = 288;
+const int BK_SCREEN_WIDTH = 512;
+const int BK_SCREEN_HEIGHT = 256;
 
 void PrintOctalValue(TCHAR* buffer, WORD value);
 TCHAR Translate_BK_Unicode(BYTE ch);

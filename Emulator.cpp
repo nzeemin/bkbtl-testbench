@@ -531,19 +531,19 @@ bool Emulator_AttachFloppyImage(int slot, LPCTSTR sFilePath)
 //   result     Bit to put in tape input port.
 bool CALLBACK Emulator_TapeReadCallback(unsigned int samples)
 {
-	if (samples == 0) return 0;
+    if (samples == 0) return 0;
 
     // Scroll buffer
     memmove(m_TapeBuffer, m_TapeBuffer + samples, TAPE_BUFFER_SIZE - samples);
 
-	UINT value = 0;
-	for (UINT i = 0; i < samples; i++)
-	{
-		value = WavPcmFile_ReadOne(m_hTapeWavPcmFile);
+    UINT value = 0;
+    for (UINT i = 0; i < samples; i++)
+    {
+        value = WavPcmFile_ReadOne(m_hTapeWavPcmFile);
         *(m_TapeBuffer + TAPE_BUFFER_SIZE - samples + i) = (uint8_t)((value >> 24) & 0xff);
-	}
-	bool result = (value >= UINT_MAX / 2);
-	return result;
+    }
+    bool result = (value >= UINT_MAX / 2);
+    return result;
 }
 
 void CALLBACK Emulator_TapeWriteCallback(int value, UINT samples)
@@ -564,9 +564,9 @@ void CALLBACK Emulator_TapeWriteCallback(int value, UINT samples)
 
 bool Emulator_OpenTape(LPCTSTR sFilePath)
 {
-	m_hTapeWavPcmFile = WavPcmFile_Open(sFilePath);
-	if (m_hTapeWavPcmFile == INVALID_HANDLE_VALUE)
-		return false;
+    m_hTapeWavPcmFile = WavPcmFile_Open(sFilePath);
+    if (m_hTapeWavPcmFile == INVALID_HANDLE_VALUE)
+        return false;
 
     int sampleRate = WavPcmFile_GetFrequency(m_hTapeWavPcmFile);
     g_pBoard->SetTapeReadCallback(Emulator_TapeReadCallback, sampleRate);
@@ -576,9 +576,9 @@ bool Emulator_OpenTape(LPCTSTR sFilePath)
 
 bool Emulator_CreateTape(LPCTSTR sFilePath)
 {
-	m_hTapeWavPcmFile = WavPcmFile_Create(sFilePath, 44100);
-	if (m_hTapeWavPcmFile == INVALID_HANDLE_VALUE)
-		return false;
+    m_hTapeWavPcmFile = WavPcmFile_Create(sFilePath, 44100);
+    if (m_hTapeWavPcmFile == INVALID_HANDLE_VALUE)
+        return false;
 
     int sampleRate = WavPcmFile_GetFrequency(m_hTapeWavPcmFile);
     g_pBoard->SetTapeWriteCallback(Emulator_TapeWriteCallback, sampleRate);
@@ -592,7 +592,7 @@ void Emulator_CloseTape()
     g_pBoard->SetTapeWriteCallback(NULL, 0);
 
     WavPcmFile_Close(m_hTapeWavPcmFile);
-	m_hTapeWavPcmFile = (HWAVPCMFILE) INVALID_HANDLE_VALUE;
+    m_hTapeWavPcmFile = (HWAVPCMFILE) INVALID_HANDLE_VALUE;
 }
 
 
@@ -964,24 +964,25 @@ void Emulator_KeyboardPressRelease(uint8_t bkscan, int timeout)
     Emulator_Run(3);
 }
 
-const uint8_t arrChar2BkScan[256] = {
-/*       0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f  */
-/*0*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0030, 0000, 0012, 0000, 0000, 0000, 0000, 0000, 
-/*1*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 
-/*2*/    0040, 0041, 0042, 0043, 0044, 0045, 0046, 0047, 0050, 0051, 0052, 0053, 0054, 0055, 0056, 0057, 
-/*3*/    0060, 0061, 0062, 0063, 0064, 0065, 0066, 0067, 0070, 0071, 0072, 0073, 0074, 0275, 0076, 0077, 
-/*4*/    0100, 0101, 0102, 0103, 0104, 0105, 0106, 0107, 0110, 0111, 0112, 0113, 0114, 0115, 0116, 0117, 
-/*5*/    0120, 0121, 0122, 0123, 0124, 0125, 0126, 0127, 0130, 0131, 0132, 0133, 0134, 0135, 0136, 0137, 
-/*6*/    0140, 0141, 0142, 0143, 0144, 0145, 0146, 0147, 0150, 0151, 0152, 0153, 0154, 0155, 0156, 0157, 
-/*7*/    0160, 0161, 0162, 0163, 0164, 0165, 0166, 0167, 0170, 0171, 0172, 0173, 0174, 0175, 0176, 0000, 
-/*8*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 
-/*9*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 
-/*a*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 
-/*b*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 
-/*c*/    0007, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 
-/*d*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 
-/*e*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 
-/*f*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 
+const uint8_t arrChar2BkScan[256] =
+{
+    /*       0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f  */
+    /*0*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0030, 0000, 0012, 0000, 0000, 0000, 0000, 0000,
+    /*1*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000,
+    /*2*/    0040, 0041, 0042, 0043, 0044, 0045, 0046, 0047, 0050, 0051, 0052, 0053, 0054, 0055, 0056, 0057,
+    /*3*/    0060, 0061, 0062, 0063, 0064, 0065, 0066, 0067, 0070, 0071, 0072, 0073, 0074, 0275, 0076, 0077,
+    /*4*/    0100, 0101, 0102, 0103, 0104, 0105, 0106, 0107, 0110, 0111, 0112, 0113, 0114, 0115, 0116, 0117,
+    /*5*/    0120, 0121, 0122, 0123, 0124, 0125, 0126, 0127, 0130, 0131, 0132, 0133, 0134, 0135, 0136, 0137,
+    /*6*/    0140, 0141, 0142, 0143, 0144, 0145, 0146, 0147, 0150, 0151, 0152, 0153, 0154, 0155, 0156, 0157,
+    /*7*/    0160, 0161, 0162, 0163, 0164, 0165, 0166, 0167, 0170, 0171, 0172, 0173, 0174, 0175, 0176, 0000,
+    /*8*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000,
+    /*9*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000,
+    /*a*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000,
+    /*b*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000,
+    /*c*/    0007, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000,
+    /*d*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000,
+    /*e*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000,
+    /*f*/    0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000, 0000,
 };
 
 void Emulator_KeyboardPressReleaseChar(char ch, int timeout)
@@ -1016,8 +1017,8 @@ bool Emulator_LoadBin(LPCTSTR strFileName)
 
     // Load BIN header
     uint8_t bufHeader[20];
-	DWORD bytesRead;
-	::ReadFile(hFile, bufHeader, 4, &bytesRead, NULL);
+    DWORD bytesRead;
+    ::ReadFile(hFile, bufHeader, 4, &bytesRead, NULL);
     if (bytesRead != 4)
     {
         ::CloseHandle(hFile);
@@ -1036,7 +1037,7 @@ bool Emulator_LoadBin(LPCTSTR strFileName)
     uint8_t* pBuffer = (uint8_t*)::LocalAlloc(LPTR, memoryBytes);
 
     // Load file data
-	::ReadFile(hFile, pBuffer, dataSize, &bytesRead, NULL);
+    ::ReadFile(hFile, pBuffer, dataSize, &bytesRead, NULL);
     if (bytesRead != bytesToRead)
     {
         ::LocalFree(pBuffer);

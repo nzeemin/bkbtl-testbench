@@ -115,7 +115,6 @@ void DebugLogFormat(LPCTSTR pszFormat, ...)
     DebugLog(buffer);
 }
 
-
 #endif // !defined(PRODUCT)
 
 
@@ -130,9 +129,10 @@ const TCHAR* REGISTER_NAME[] = { _T("R0"), _T("R1"), _T("R2"), _T("R3"), _T("R4"
 // buffer size at least 7 characters
 void PrintOctalValue(TCHAR* buffer, WORD value)
 {
-    for (int p = 0; p < 6; p++) {
+    for (int p = 0; p < 6; p++)
+    {
         int digit = value & 7;
-        buffer[5 - p] = _T('0') + digit;
+        buffer[5 - p] = _T('0') + (TCHAR)digit;
         value = (value >> 3);
     }
     buffer[6] = 0;
@@ -141,9 +141,10 @@ void PrintOctalValue(TCHAR* buffer, WORD value)
 // buffer size at least 5 characters
 void PrintHexValue(TCHAR* buffer, WORD value)
 {
-    for (int p = 0; p < 4; p++) {
+    for (int p = 0; p < 4; p++)
+    {
         int digit = value & 15;
-        buffer[3 - p] = (digit < 10) ? _T('0') + digit : _T('a') + digit - 10;
+        buffer[3 - p] = (digit < 10) ? _T('0') + (TCHAR)digit : _T('a') + (TCHAR)(digit - 10);
         value = (value >> 4);
     }
     buffer[4] = 0;
@@ -152,7 +153,8 @@ void PrintHexValue(TCHAR* buffer, WORD value)
 // buffer size at least 17 characters
 void PrintBinaryValue(TCHAR* buffer, WORD value)
 {
-    for (int b = 0; b < 16; b++) {
+    for (int b = 0; b < 16; b++)
+    {
         int bit = (value >> b) & 1;
         buffer[15 - b] = bit ? _T('1') : _T('0');
     }
@@ -187,22 +189,22 @@ TCHAR Translate_BK_Unicode(BYTE ch)
 void Test_Log(char eventtype, LPCTSTR message)
 {
     HANDLE hStdOut = ::GetStdHandle(STD_OUTPUT_HANDLE);
-    WORD fgcolor = FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE;
+    WORD fgcolor = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
     if (eventtype == 'E')
     {
-        fgcolor = FOREGROUND_RED|FOREGROUND_INTENSITY;
+        fgcolor = FOREGROUND_RED | FOREGROUND_INTENSITY;
         m_okCommon_CurrentTestFailed = true;
     }
     else if (eventtype == '!')
-        fgcolor = FOREGROUND_GREEN|FOREGROUND_INTENSITY;
+        fgcolor = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
     //TODO: Show BK uptime
     SYSTEMTIME stm;
     ::GetLocalTime(&stm);
     ::SetConsoleTextAttribute(hStdOut, fgcolor);
     printf("%02d:%02d:%02d.%03d %c %S\n",
-        stm.wHour, stm.wMinute, stm.wSecond, stm.wMilliseconds,
-        eventtype, message);
-    ::SetConsoleTextAttribute(hStdOut, FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+           stm.wHour, stm.wMinute, stm.wSecond, stm.wMilliseconds,
+           eventtype, message);
+    ::SetConsoleTextAttribute(hStdOut, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
 
 void Test_LogFormat(char eventtype, LPCTSTR format, ...)
@@ -326,9 +328,9 @@ void Test_CopyFile(LPCTSTR sFileNameFrom, LPCTSTR sFileNameTo)
 void Test_CreateDiskImage(LPCTSTR sFileName, int tracks)
 {
     LONG fileSize = tracks * 10240;
-	HANDLE hFile = ::CreateFile(sFileName,
-		GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE)
+    HANDLE hFile = ::CreateFile(sFileName,
+            GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE)
     {
         Test_LogFormat('E', _T("FAILED to create disk image %s"), sFileName);
         return;
