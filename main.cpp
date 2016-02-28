@@ -105,7 +105,7 @@ void Test01_Basic10()
 
 void Test011_Basic10_Cassette()
 {
-    Test_Init(_T("TEST 11: BASIC BK0010 CASSETTE"), BK_CONF_BK0010_BASIC);
+    Test_Init(_T("TEST 1-1: BASIC BK0010 CASSETTE"), BK_CONF_BK0010_BASIC);
 
     Emulator_Run(50);
 
@@ -130,9 +130,9 @@ void Test011_Basic10_Cassette()
     Test_Done();
 }
 
-void Test02_Focal10()
+void Test021_Focal10()
 {
-    Test_Init(_T("TEST 2: Focal BK0010"), BK_CONF_BK0010_FOCAL);
+    Test_Init(_T("TEST 2-1: Focal BK0010"), BK_CONF_BK0010_FOCAL);
 
     Emulator_Run(50);
     Emulator_KeyboardSequence("V\n");
@@ -175,6 +175,34 @@ void Test02_Focal10()
     Test_Done();
 }
 
+void Test022_MSTD10()
+{
+    Test_Init(_T("TEST 2-2: MSTD BK0010"), BK_CONF_BK0010_FOCAL);
+
+    Emulator_Run(50);
+    Emulator_KeyboardSequence("P M\n");
+    Emulator_Run(10);
+    Emulator_KeyboardSequence("T\n");
+    Emulator_Run(5);
+    Test_CheckScreenshot(_T("data\\test022_01.bmp"));
+
+    Emulator_Run(10);
+    Emulator_KeyboardSequence("1\n");
+    Emulator_Run(120);
+    Test_CheckScreenshot(_T("data\\test022_11.bmp"));
+    Emulator_Run(535);
+    Test_CheckScreenshot(_T("data\\test022_12.bmp"));
+    Emulator_Run(220);
+    Test_CheckScreenshot(_T("data\\test022_13.bmp"));
+
+    //Emulator_Run(10);
+
+    //Test_SaveScreenshotSeria(_T("video\\test22_%04u.bmp"), 20, 5);
+    //Test_SaveScreenshot(_T("test022_01.bmp"));
+
+    Test_Done();
+}
+
 void Test03_Tmos()
 {
     Test_Init(_T("TEST 3: TMOS tests"), BK_CONF_BK0010_FOCAL);
@@ -201,7 +229,7 @@ void Test03_Tmos()
 
 void Test031_Tricks()
 {
-    Test_Init(_T("TEST 31: Tricks"), BK_CONF_BK0010_BASIC);
+    Test_Init(_T("TEST 3-1: Tricks"), BK_CONF_BK0010_BASIC);
 
     // Double loop using INC PC, see http://zx.pk.ru/showpost.php?p=283480&postcount=29
     Emulator_Run(50);
@@ -498,7 +526,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
     Test01_Basic10();
     Test011_Basic10_Cassette();
-    Test02_Focal10();
+    Test021_Focal10();
+    Test022_MSTD10();
     //Test03_Tmos();
     Test031_Tricks();
     Test04_MSTD11();
