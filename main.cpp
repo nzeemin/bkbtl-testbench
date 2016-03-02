@@ -115,7 +115,7 @@ void Test011_Basic10_Cassette()
     Test_CreateTape(_T("temp\\test011_01.wav"));
     Emulator_Run(25 * 12);
     Test_CloseTape();
-    Test_SaveScreenshot(_T("data\\test011_01.bmp"));
+    Test_CheckScreenshot(_T("data\\test011_01.bmp"));
 
     Emulator_KeyboardSequence("NEW\n");
     Emulator_Run(20);
@@ -125,7 +125,7 @@ void Test011_Basic10_Cassette()
     Test_CloseTape();
     Emulator_KeyboardSequence("LIST\n");
     Emulator_Run(5);
-    Test_SaveScreenshot(_T("data\\test011_02.bmp"));
+    Test_CheckScreenshot(_T("data\\test011_02.bmp"));
 
     Test_Done();
 }
@@ -518,7 +518,7 @@ void Test06_RT11()
     Test_Done();
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
 {
     SYSTEMTIME timeFrom;  ::GetLocalTime(&timeFrom);
     DebugLogClear();
