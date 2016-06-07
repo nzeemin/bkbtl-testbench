@@ -187,7 +187,7 @@ void Emulator_Done()
 
 bool Emulator_InitConfiguration(BKConfiguration configuration)
 {
-    g_pBoard->SetConfiguration(configuration);
+    g_pBoard->SetConfiguration((uint16_t)configuration);
 
     uint8_t buffer[8192];
 
@@ -409,7 +409,7 @@ void Emulator_FakeTape_StartReadFile()
     // Retrieve EMT 36 file name
     TCHAR filename[24];
     uint16_t nameaddr = 0326; //g_pBoard->GetRAMWord(0306) + 6;
-    for (int i = 0; i < 16; i++)
+    for (uint16_t i = 0; i < 16; i++)
     {
         uint8_t ch = g_pBoard->GetRAMByte(nameaddr + i);
         filename[i] = (ch < 32) ? 0 : Translate_BK_Unicode(ch);
@@ -493,7 +493,7 @@ void Emulator_FakeTape_StartReadFile()
             uint16_t start = g_pBoard->GetRAMWord(0322);
             if (start == 0)
                 start = filestart;
-            for (int i = 0; i < filesize; i++)
+            for (uint16_t i = 0; i < filesize; i++)
             {
                 g_pBoard->SetRAMByte(start + i, pData[i]);
             }
@@ -669,7 +669,7 @@ void Emulator_PrepareScreenRGB32(void* pImageBits, int screenMode)
     callback(pVideoBuffer, okSmallScreen, pPalette, scroll, pImageBits);
 }
 
-void CALLBACK Emulator_PrepareScreenBW512x256(const uint8_t* pVideoBuffer, int okSmallScreen, const uint32_t* pPalette, int scroll, void* pImageBits)
+void CALLBACK Emulator_PrepareScreenBW512x256(const uint8_t* pVideoBuffer, int okSmallScreen, const uint32_t* /*pPalette*/, int scroll, void* pImageBits)
 {
     int linesToShow = okSmallScreen ? 64 : 256;
     for (int y = 0; y < linesToShow; y++)
