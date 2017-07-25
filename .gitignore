@@ -6,5 +6,8 @@
 /Release
 /*.rom
 /emubase
+/ipch
 /temp
 /video/*
+/*.sdf
+/*.opensdf

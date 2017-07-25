@@ -325,22 +325,21 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(0200);  // STEP
     Emulator_KeyboardPressRelease(0014);  // SBR
     Emulator_KeyboardPressRelease(BK_KEY_STOP);
-    //Emulator_KeyboardEvent(BK_KEY_BACKSHIFT, true);
-    Emulator_KeyboardPressRelease(0073);  // ; +  //TODO: with BackShift
+    Emulator_KeyboardPressRelease(0053);  // +
     Emulator_KeyboardPressRelease(0061);  // 1
-    Emulator_KeyboardPressRelease(0062);
-    Emulator_KeyboardPressRelease(0063);
-    Emulator_KeyboardPressRelease(0064);
-    Emulator_KeyboardPressRelease(0065);
-    Emulator_KeyboardPressRelease(0066);
-    Emulator_KeyboardPressRelease(0067);
-    Emulator_KeyboardPressRelease(0070);
-    Emulator_KeyboardPressRelease(0071);
+    Emulator_KeyboardPressRelease(0062);  // 2
+    Emulator_KeyboardPressRelease(0063);  // 3
+    Emulator_KeyboardPressRelease(0064);  // 4
+    Emulator_KeyboardPressRelease(0065);  // 5
+    Emulator_KeyboardPressRelease(0066);  // 6
+    Emulator_KeyboardPressRelease(0067);  // 7
+    Emulator_KeyboardPressRelease(0070);  // 8
+    Emulator_KeyboardPressRelease(0071);  // 9
     Emulator_KeyboardPressRelease(0060);  // 0
-    Emulator_KeyboardPressRelease(0055);  // - =
-    Emulator_KeyboardPressRelease(0072);  // : *
+    Emulator_KeyboardPressRelease(0055);  // -
+    Emulator_KeyboardPressRelease(0072);  // :
     Emulator_KeyboardPressRelease(0030);  // Backspace
-    Emulator_KeyboardPressRelease(0015);  // TAB
+    Emulator_KeyboardPressRelease(0011);  // TAB
     Emulator_KeyboardPressRelease(0112);  // É J
     Emulator_KeyboardPressRelease(0103);  // Ö C
     Emulator_KeyboardPressRelease(0125);  // Ó U
@@ -365,28 +364,26 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(0114);  // Ë L
     Emulator_KeyboardPressRelease(0104);  // Ä D
     Emulator_KeyboardPressRelease(0126);  // Æ V
-    Emulator_KeyboardPressRelease(0134);  // Ý Backslash
-    Emulator_KeyboardPressRelease(0056);  // . >
+    Emulator_KeyboardPressRelease(0134);  // Backslash
+    Emulator_KeyboardPressRelease(0056);  // .
     Emulator_KeyboardPressRelease(0012);  // ENTER
-    //Emulator_KeyboardEvent(BK_KEY_LOWER, true);
-    //Test_SaveScreenshot(_T("test04_04_2p.bmp"), 1);
-    Emulator_KeyboardPressRelease(0121);  // ß Q  //TODO: with ???
-    Emulator_KeyboardPressRelease(0136);  // × ^  //TODO
-    Emulator_KeyboardPressRelease(0123);  // Ñ S  //TODO
-    Emulator_KeyboardPressRelease(0115);  // Ì M  //TODO
-    Emulator_KeyboardPressRelease(0111);  // È I  //TODO
-    Emulator_KeyboardPressRelease(0124);  // Ò T  //TODO
-    Emulator_KeyboardPressRelease(0130);  // Ü X  //TODO
-    Emulator_KeyboardPressRelease(0102);  // Á B  //TODO
-    Emulator_KeyboardPressRelease(0100);  // Þ @  //TODO
-    Emulator_KeyboardPressRelease(0054);  // , <
+    Emulator_KeyboardPressRelease(0161);  // q
+    Emulator_KeyboardPressRelease(0176);  // × ^
+    Emulator_KeyboardPressRelease(0163);  // s
+    Emulator_KeyboardPressRelease(0155);  // m
+    Emulator_KeyboardPressRelease(0151);  // i
+    Emulator_KeyboardPressRelease(0164);  // t
+    Emulator_KeyboardPressRelease(0170);  // x
+    Emulator_KeyboardPressRelease(0142);  // b
+    Emulator_KeyboardPressRelease(0140);  // @
+    Emulator_KeyboardPressRelease(0054);  // ,
     Emulator_KeyboardPressRelease(0010);  // Left
     Emulator_KeyboardPressRelease(0032);  // Up
     Emulator_KeyboardPressRelease(0031);  // Right
     Emulator_KeyboardPressRelease(0033);  // Down
-    Emulator_KeyboardPressRelease(0040);  //TODO: AP2? + Space
+    Emulator_KeyboardPressRelease(0240);  // AP2 + Space
     Emulator_KeyboardPressRelease(0017);  // LAT
-    Test_SaveScreenshot(_T("test04_04_2.bmp"), 1);
+    Test_CheckScreenshot(_T("data\\test04_04_2.bmp"), 1);
     Emulator_KeyboardPressRelease(012);  // Enter -- exit the test
 
     // Tape port test
