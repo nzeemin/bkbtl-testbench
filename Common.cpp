@@ -197,6 +197,8 @@ void Test_Log(char eventtype, LPCTSTR message)
     }
     else if (eventtype == '!')
         fgcolor = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+    else if (eventtype == '*')
+        fgcolor = FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY;
     //TODO: Show BK uptime
     SYSTEMTIME stm;
     ::GetLocalTime(&stm);
@@ -281,7 +283,7 @@ void Test_CloseTape()
 void Test_SaveScreenshot(LPCTSTR sFileName, int screenMode)
 {
     if (Emulator_SaveScreenshot(sFileName, screenMode))
-        Test_LogFormat('i', _T("Saved screenshot %s"), sFileName);
+        Test_LogFormat('*', _T("Saved screenshot %s"), sFileName);
     else
         Test_LogFormat('E', _T("FAILED to save screenshot %s"), sFileName);
 }

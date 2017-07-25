@@ -262,6 +262,26 @@ void Test031_Tricks()
     Test_Done();
 }
 
+void Test032_CpuTest()
+{
+    Test_Init(_T("TEST 3-2: CPUTEST"), BK_CONF_BK0010_BASIC);
+
+    Emulator_Run(50);
+    Emulator_KeyboardSequence("MO\n");
+    Emulator_Run(50);
+    Test_LoadBin(_T("data\\cputest.bin"));
+    Emulator_KeyboardSequence("S1000\n");
+    Emulator_Run(10);
+    Test_CheckScreenshot(_T("data\\test032_01.bmp"), 0);
+    Emulator_Run(1200);
+    Test_CheckScreenshot(_T("data\\test032_02.bmp"), 0);
+    //NOTE: После теста #4 похоже зациклилось
+    //Emulator_Run(25 * 200);
+    //Test_SaveScreenshotSeria(_T("video\\test032_%04u.bmp"), 30, 200);
+
+    Test_Done();
+}
+
 void Test04_MSTD11()
 {
     Test_Init(_T("TEST 4: BK0011M MSTD"), BK_CONF_BK0011);
@@ -297,12 +317,12 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(0016);  // RUS
     Emulator_KeyboardPressRelease(BK_KEY_REPEAT);
     Emulator_KeyboardPressRelease(0003);  // KT
-    Emulator_KeyboardPressRelease(0231);  // =|=>|  //TODO
+    Emulator_KeyboardPressRelease(0213);  // =|=>|
     Emulator_KeyboardPressRelease(0026);  // |<===
     Emulator_KeyboardPressRelease(0027);  // |===>
     Emulator_KeyboardPressRelease(0202);  // IND SU
     Emulator_KeyboardPressRelease(0204);  // BLOK RED
-    Emulator_KeyboardPressRelease(0220);  // STEP
+    Emulator_KeyboardPressRelease(0200);  // STEP
     Emulator_KeyboardPressRelease(0014);  // SBR
     Emulator_KeyboardPressRelease(BK_KEY_STOP);
     //Emulator_KeyboardEvent(BK_KEY_BACKSHIFT, true);
@@ -346,9 +366,10 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(0104);  // Д D
     Emulator_KeyboardPressRelease(0126);  // Ж V
     Emulator_KeyboardPressRelease(0134);  // Э Backslash
-    Emulator_KeyboardPressRelease(0076);  // . >  //TODO
+    Emulator_KeyboardPressRelease(0056);  // . >
     Emulator_KeyboardPressRelease(0012);  // ENTER
     //Emulator_KeyboardEvent(BK_KEY_LOWER, true);
+    //Test_SaveScreenshot(_T("test04_04_2p.bmp"), 1);
     Emulator_KeyboardPressRelease(0121);  // Я Q  //TODO: with ???
     Emulator_KeyboardPressRelease(0136);  // Ч ^  //TODO
     Emulator_KeyboardPressRelease(0123);  // С S  //TODO
@@ -358,7 +379,7 @@ void Test04_MSTD11()
     Emulator_KeyboardPressRelease(0130);  // Ь X  //TODO
     Emulator_KeyboardPressRelease(0102);  // Б B  //TODO
     Emulator_KeyboardPressRelease(0100);  // Ю @  //TODO
-    Emulator_KeyboardPressRelease(0074);  // , <  //TODO
+    Emulator_KeyboardPressRelease(0054);  // , <
     Emulator_KeyboardPressRelease(0010);  // Left
     Emulator_KeyboardPressRelease(0032);  // Up
     Emulator_KeyboardPressRelease(0031);  // Right
@@ -489,6 +510,9 @@ void Test05_Games10()
     Emulator_KeyboardPressRelease(012, 10); // Enter
     Emulator_Run(50);
     Test_CheckScreenshot(_T("data\\test05_07.bmp"), 1);
+    Emulator_Run(200);
+    Test_SaveScreenshot(_T("test05_08.bmp"), 1);
+    //Test_SaveScreenshotSeria(_T("video\\test01_%04u.bmp"), 20, 10);
 
     //TODO
 
@@ -530,6 +554,7 @@ int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
     Test022_MSTD10();
     //Test03_Tmos();
     Test031_Tricks();
+    Test032_CpuTest();
     Test04_MSTD11();
     Test05_Games10();
     Test06_RT11();
