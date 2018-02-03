@@ -28,3 +28,6 @@ install:
 build:
   project: TestBench-VS2013.sln
 
+after_build:
+  - Release\TestBench.exe
+
