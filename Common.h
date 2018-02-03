@@ -77,7 +77,7 @@ void Test_AssertFailedLine(LPCSTR lpszFileName, int nLine);
 
 void Test_Init(LPCTSTR sTestTitle, int configuration);
 void Test_Done();
-void Test_LogSummary();
+BOOL Test_LogSummary();
 
 void Test_AttachFloppyImage(int slot, LPCTSTR sFilePath);
 

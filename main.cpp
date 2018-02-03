@@ -566,7 +566,7 @@ int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
     DWORD diff = fileTimeTo.dwLowDateTime - fileTimeFrom.dwLowDateTime;  // number of 100-nanosecond intervals
     Test_LogFormat('i', _T("Time spent: %.3f seconds"), (float)diff / 10000000.0);
 
-    Test_LogSummary();
+    BOOL result = Test_LogSummary();
 
-    return 0;
+    return result ? 0 : 10;
 }
