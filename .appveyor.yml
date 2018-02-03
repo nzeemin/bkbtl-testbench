@@ -1,0 +1,30 @@
+image: Visual Studio 2015
+
+init:
+  - git config --global core.autocrlf input
+
+clone_folder: C:\projects\bkbtl-testbench
+shallow_clone: true
+
+matrix:
+  fast_finish: false
+
+platform:
+  - Win32
+
+configuration:
+  - Release
+
+environment:
+  matrix:
+    - toolchain: msvc13
+
+install:
+  - mkdir C:\projects\bkbtl
+  - git clone --depth=1 --branch=master https://github.com/nzeemin/bkbtl.git C:\projects\bkbtl
+  - mkdir C:\projects\bkbtl-testbench\emubase
+  - copy C:\projects\bkbtl\emubase\*.* C:\projects\bkbtl-testbench\emubase
+
+build:
+  project: TestBench-VS2013.sln
+
