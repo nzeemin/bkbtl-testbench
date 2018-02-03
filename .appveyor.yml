@@ -29,5 +29,7 @@ build:
   project: TestBench-VS2013.sln
 
 after_build:
+  - copy C:\projects\bkbtl\roms\*.rom C:\projects\bkbtl-testbench
+  - mkdir C:\projects\bkbtl-testbench\temp
   - Release\TestBench.exe
 
