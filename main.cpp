@@ -522,7 +522,7 @@ void Test06_RT11()
 
     Test_CopyFile(_T("data\\rt11v4_1.img"), _T("temp\\rt11v4_1.img"));
     Test_AttachFloppyImage(0, _T("temp\\rt11v4_1.img"));
-    Emulator_Run(650);
+    Emulator_Run(550);
     Test_CheckScreenshot(_T("data\\test06_01.bmp"));
     Emulator_Run(14 * 25);
     Test_CheckScreenshot(_T("data\\test06_02.bmp"));
@@ -530,6 +530,16 @@ void Test06_RT11()
     Emulator_KeyboardSequence("SH CONF\n");
     Emulator_Run(500);
     Test_CheckScreenshot(_T("data\\test06_03.bmp"));
+
+    Emulator_KeyboardSequence("TSTVM1\n");
+    Emulator_Run(970);
+    Test_SaveScreenshot(_T("data\\test06_tstvm1_01.bmp"));
+    Emulator_KeyboardPressRelease(012); // Enter
+    Emulator_Run(15640);
+    Test_SaveScreenshot(_T("data\\test06_tstvm1_02.bmp"));
+    Emulator_KeyboardPressRelease(012); // Enter
+    Emulator_Run(3180);
+    Test_SaveScreenshot(_T("data\\test06_tstvm1_03.bmp"));
 
     Emulator_KeyboardSequence("IC\n");
     Emulator_Run(34 * 25);
