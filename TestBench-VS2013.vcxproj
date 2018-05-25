@@ -94,6 +94,7 @@
     <ClCompile Include="emubase\Disasm.cpp" />
     <ClCompile Include="emubase\Floppy.cpp" />
     <ClCompile Include="emubase\Processor.cpp" />
+    <ClCompile Include="emubase\SoundAY.cpp" />
     <ClCompile Include="Emulator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp">

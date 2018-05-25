@@ -42,6 +42,9 @@
     <ClCompile Include="util\WavPcmFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="emubase\SoundAY.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="emubase\Board.h">
