@@ -98,6 +98,19 @@ void Test01_Basic10()
     Emulator_Run(100);
     Test_CheckScreenshot(_T("data\\test01_08.bmp"), 1);
 
+    // Draw circles
+    Emulator_Reset();
+    Emulator_Run(50);
+    Emulator_KeyboardSequence("0 CLS\n");
+    Emulator_KeyboardSequence("1 FOR I%=0%TO120%\n");
+    Emulator_KeyboardSequence("2 CIRCLE (128%,120%),I%,(I%/30%)\n");
+    Emulator_KeyboardSequence("3 NEXT I%\n");
+    Emulator_KeyboardSequence("RUN\n");
+    Emulator_Run(1100);
+    Emulator_KeyboardSequence("LIST\n");
+    Emulator_Run(100);
+    Test_CheckScreenshot(_T("data\\test01_09.bmp"), 1);
+
     //Test_SaveScreenshotSeria(_T("video\\test01_%04u.bmp"), 20, 10);
 
     Test_Done();

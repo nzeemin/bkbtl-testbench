@@ -60,5 +60,8 @@ void Emulator_AttachTeletypeBuffer(int bufferSize = 1024);
 void Emulator_DetachTeletypeBuffer();
 const char * Emulator_GetTeletypeBuffer();
 
+bool Emulator_SaveImage(LPCTSTR sFilePath);
+bool Emulator_LoadImage(LPCTSTR sFilePath);
+
 
 //////////////////////////////////////////////////////////////////////

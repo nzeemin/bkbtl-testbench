@@ -24,16 +24,16 @@ int m_nCommon_TestsFailed = 0;
 
 //////////////////////////////////////////////////////////////////////
 
-bool AssertFailedLine(LPCSTR /*lpszFileName*/, int /*nLine*/)
+bool AssertFailedLine(LPCSTR lpszFileName, int nLine)
 {
-    //TODO: Implement in this environment
+    DebugPrintFormat(_T("ASSERT in %s at line %n"), lpszFileName, nLine);
 
     return FALSE;
 }
 
-void AlertWarning(LPCTSTR /*sMessage*/)
+void AlertWarning(LPCTSTR sMessage)
 {
-    //TODO: Implement in this environment
+    Test_Log('*', sMessage);
 }
 void AlertWarningFormat(LPCTSTR /*sFormat*/, ...)
 {
@@ -68,26 +68,41 @@ const LPCTSTR TRACELOG_NEWLINE = _T("\r\n");
 
 HANDLE Common_LogFile = NULL;
 
+void DebugLogCreateFile()
+{
+    if (Common_LogFile == NULL)
+    {
+        Common_LogFile = ::CreateFile(TRACELOG_FILE_NAME,
+                GENERIC_WRITE, FILE_SHARE_READ, NULL,
+                CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    }
+}
+
+void DebugLogCloseFile()
+{
+    if (Common_LogFile == NULL)
+        return;
+
+    ::CloseHandle(Common_LogFile);
+    Common_LogFile = NULL;
+}
+
 void DebugLogClear()
 {
+    DebugLogCreateFile();
+
     if (Common_LogFile != NULL)
     {
-        CloseHandle(Common_LogFile);
-        Common_LogFile = NULL;
+        // Trunkate to zero length
+        ::SetFilePointer(Common_LogFile, 0, 0, 0);
+        ::SetEndOfFile(Common_LogFile);
     }
-
-    ::DeleteFile(TRACELOG_FILE_NAME);
 }
 
 void DebugLog(LPCTSTR message)
 {
-    if (Common_LogFile == NULL)
-    {
-        // Create file
-        Common_LogFile = CreateFile(TRACELOG_FILE_NAME,
-                GENERIC_WRITE, FILE_SHARE_READ, NULL,
-                CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    }
+    DebugLogCreateFile();
+
     SetFilePointer(Common_LogFile, 0, NULL, FILE_END);
 
     uint32_t dwLength = lstrlen(message) * sizeof(TCHAR);
@@ -161,6 +176,24 @@ void PrintBinaryValue(TCHAR* buffer, WORD value)
     buffer[16] = 0;
 }
 
+// Parse octal value from text
+BOOL ParseOctalValue(LPCTSTR text, WORD* pValue)
+{
+    WORD value = 0;
+    TCHAR* pChar = (TCHAR*) text;
+    for (int p = 0; ; p++)
+    {
+        if (p > 6) return FALSE;
+        TCHAR ch = *pChar;  pChar++;
+        if (ch == 0) break;
+        if (ch < _T('0') || ch > _T('7')) return FALSE;
+        value = (value << 3);
+        TCHAR digit = ch - _T('0');
+        value += digit;
+    }
+    *pValue = value;
+    return TRUE;
+}
 
 // BK to Unicode conversion table
 const TCHAR BK_CHAR_CODES[] =
